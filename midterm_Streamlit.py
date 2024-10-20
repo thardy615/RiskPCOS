@@ -5,14 +5,18 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from imblearn.over_sampling import SMOTE
 from scipy.stats import zscore
+import plotly.express as px
+import plotly.figure_factory as ff
+import plotly.graph_objects as go
 
-# Load and preprocess data
+### Creating functions ###
+
+# Load and merge data
 def load_data():
-    # Load data
     fertile_df = pd.read_csv("pcos_data_fertile.csv")
     infertile_df = pd.read_csv("PCOS_infertility.csv")
     
-    # Clean up column names
+    # Clean up column names for consistency
     fertile_df.columns = fertile_df.columns.str.strip()
     infertile_df.columns = infertile_df.columns.str.strip()
 
@@ -28,13 +32,12 @@ def load_data():
     
     return merged_df
 
-# Visualize missing values
+# Use SMOTE to get equally distributed (50/50 non-PCOS and PCOS data) resampled data
 def prepare_resampled_data():
-    # Load your data
+    # Load data
     merged_df = load_data()
-    
-    merged_df = merged_df.apply(pd.to_numeric, errors='coerce')
-    merged_df = merged_df.dropna()
+    merged_df = merged_df.apply(pd.to_numeric, errors='coerce') # Coerce to numeric columns
+    merged_df = merged_df.dropna() # Drop NAs
     
     true_numeric_cols = ['Age (yrs)', 'Weight (Kg)', 'Height(Cm)', 'BMI', 'Pulse rate(bpm)', 'RR (breaths/min)', 'Hb(g/dl)', 'Cycle length(days)', 
                      'Marraige Status (Yrs)', 'No. of aborptions','I   beta-HCG(mIU/mL)', 'II    beta-HCG(mIU/mL)', 
@@ -42,40 +45,27 @@ def prepare_resampled_data():
                      'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 'Vit D3 (ng/mL)', 'PRG(ng/mL)', 'RBS(mg/dl)',
                      'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)', 'Follicle No. (L)', 'Follicle No. (R)', 'Avg. F size (L) (mm)', 
                     'Avg. F size (R) (mm)', 'Endometrium (mm)']
-    df_scaled = merged_df[true_numeric_cols].apply(zscore)
+    # df_scaled = merged_df[true_numeric_cols].apply(zscore)
+    df_scaled = merged_df[true_numeric_cols] # this is not scaled for right now, but will be when regression model is produced
     non_scaled_cols = ['Sl. No', 'Patient File No.', 'PCOS (Y/N)', 'Blood Group', 'Cycle(R/I)', 'Pregnant(Y/N)', 
                    'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
                    'Pimples(Y/N)', 'Fast food (Y/N)', 'Reg.Exercise(Y/N)']
     df_final = pd.concat([df_scaled, merged_df[non_scaled_cols]], axis=1)
+    
     # separate features (X) and target (y)
     X = df_final.drop('PCOS (Y/N)', axis=1) # data without 'PCOS (Y/N)' column
     y = df_final['PCOS (Y/N)']
     y = y.loc[X.index]  # makes sure to only keep rows in y that match X
-    # corresponding outcome label for each sample in X
-     # apply SMOTE
-    smote = SMOTE(random_state=42) # Controls randomness/variability of the algorithms by setting a seed
+    
+    # apply SMOTE
+    smote = SMOTE(random_state=42) # sets seed
     X_resampled, y_resampled = smote.fit_resample(X, y) # resamples the data and returns the X array containing resampled data and their corresponding labels
 
-    resampled_data = pd.DataFrame(X_resampled, columns=X.columns)
-    resampled_data['PCOS (Y/N)'] = y_resampled
-    return resampled_data
-resampled_data = prepare_resampled_data()
-hormone = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
- 'PRG(ng/mL)', 'Pregnant(Y/N)']]
-qualityOfLife = resampled_data[['Age (yrs)','PCOS (Y/N)',
- 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
-                   'Pimples(Y/N)', 'Reg.Exercise(Y/N)']]
-metabolic = resampled_data[['Age (yrs)','PCOS (Y/N)', 'BMI', 'Waist:Hip Ratio', 'RBS(mg/dl)',
-'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)', 'Pregnant(Y/N)', 'Reg.Exercise(Y/N)', 'Weight gain(Y/N)', 'Skin darkening (Y/N)']]
-fertility = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(days)', 
-'Follicle No. (L)', 'Follicle No. (R)', 'Avg. F size (L) (mm)', 
-                    'Avg. F size (R) (mm)', 'Endometrium (mm)', 'Pregnant(Y/N)', ]]
+    resampled_data = pd.DataFrame(X_resampled, columns=X.columns) # recreate data frame
+    resampled_data['PCOS (Y/N)'] = y_resampled # Get target column in new data frame
+    return resampled_data #return data frame after SMOTE, which should now have even data for PCOS and non-PCOS
 
-
-# Call the function to prepare data and store in session state
-if 'resampled_data' not in st.session_state:
-    st.session_state.resampled_data = prepare_resampled_data()
-    
+# Visualize missing values in heatmap
 def visualize_missing_values(data):
     numeric_cols = data.select_dtypes(include=[np.number]).columns
     data_subset = data[numeric_cols]
@@ -92,6 +82,145 @@ def visualize_missing_values(data):
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     st.pyplot(plt)
+
+# Correlation plots   
+def plot_correlations(subset, title):
+    # Calculate correlations
+    corr_matrix = subset.corr()
+
+    # Display variables correlated with PCOS
+    st.subheader(f"{title} Correlation with PCOS (Y/N)") # title
+    pc_correlations = corr_matrix['PCOS (Y/N)'] # pcos class correlations
+    for variable, value in pc_correlations.items(): #
+        if variable != 'PCOS (Y/N)' and (value > 0.2 or value < -0.1):
+            st.write(f"{variable}: {value:.2f}")
+
+    # Display correlations between other variables (excluding PCOS correlations)
+    st.subheader(f"Other {title} Variable Correlations")
+    correlation_results = []
+    for i in range(len(corr_matrix.columns)):
+        for j in range(i):
+            if (corr_matrix.iloc[i, j] > 0.2 or corr_matrix.iloc[i, j] < -0.1) and \
+                    (corr_matrix.columns[i] != 'PCOS (Y/N)' and corr_matrix.columns[j] != 'PCOS (Y/N)'):
+                correlation_results.append(f"{corr_matrix.columns[i]} and {corr_matrix.columns[j]}: {corr_matrix.iloc[i, j]:.2f}")
+
+    # Display correlation results in app
+    for result in correlation_results:
+        st.write(result)
+
+    # Create an interactive heatmap using Plotly
+    fig = go.Figure(data=go.Heatmap(
+        z=corr_matrix.values,
+        x=corr_matrix.columns,
+        y=corr_matrix.columns,
+        colorscale='RdBu',
+        zmin=-1, zmax=1,
+        hoverongaps=False
+    ))
+
+    # Update layout
+    fig.update_layout(
+        title=f'{title} Correlation Matrix',
+        xaxis_nticks=36,
+        margin=dict(l=40, r=40, t=40, b=40),
+        height=600,
+        width=800
+    )
+
+    st.plotly_chart(fig)
+
+# Histogram Plots    
+def plot_distributions(subset, title, numeric_columns, categorical_columns):
+    # Plot numeric columns as interactive histograms with rug plots
+    for col in numeric_columns:
+        if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
+            # Create histograms for Non-PCOS and PCOS
+            fig = ff.create_distplot(
+                [subset[subset['PCOS (Y/N)'] == 0][col].dropna(), subset[subset['PCOS (Y/N)'] == 1][col].dropna()],
+                group_labels=['Non-PCOS', 'PCOS'],
+                show_hist=True, show_rug=True, bin_size='auto'
+            )
+            # Add title and labels
+            fig.update_layout(
+                title=f'{title} - {col} Distribution',
+                xaxis_title=col,
+                yaxis_title='Density',
+                legend_title='PCOS (Y/N)',
+                margin=dict(l=40, r=40, t=40, b=40)
+            )
+            
+            st.plotly_chart(fig)  # plot
+
+    # Plot categorical columns as interactive bar plots
+    for col in categorical_columns:
+        if col in subset.columns and not subset[col].empty:
+            fig = px.histogram(
+                subset, x=col, color='PCOS (Y/N)', barmode='group',
+                color_discrete_map={"Non-PCOS": "blue", "PCOS": "red"},
+                title=f'{title} - {col} Distribution'
+            )
+            # Update layout
+            fig.update_layout(
+                xaxis_title=col,
+                yaxis_title='Count',
+                legend_title='PCOS (Y/N)',
+                margin=dict(l=40, r=40, t=40, b=40)
+            )
+            
+            st.plotly_chart(fig)  # Plot
+
+
+# Box Plots
+def plot_boxplots(subset, title, numeric_columns, categorical_columns=None):
+    # If categorical_columns is not provided, default to an empty list
+    if categorical_columns is None:
+        categorical_columns = []
+
+    # Plot numeric columns as box plots
+    for col in numeric_columns:
+        if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
+            plt.figure(figsize=(10, 6))
+            sns.boxplot(data=subset, x='PCOS (Y/N)', y=col, hue='PCOS (Y/N)', palette=["blue", "red"], legend=False)
+            plt.title(f'{title} - {col} Boxplot')
+            plt.xlabel('PCOS (Y/N)')
+            plt.ylabel(col)
+            plt.grid()
+            st.pyplot(plt)  # Display plot in Streamlit
+            plt.clf()  # Clear the figure to avoid overlap in the next plots
+
+    # Optionally plot categorical columns if provided
+    for col in categorical_columns:
+        if col in subset.columns and not subset[col].empty:
+            plt.figure(figsize=(10, 6))
+            sns.countplot(data=subset, x=col, hue='PCOS (Y/N)', palette=["blue", "red"])
+            plt.title(f'{title} - {col} Count')
+            plt.xlabel(col)
+            plt.ylabel('Count')
+            plt.legend(title='PCOS (Y/N)', loc='upper right', labels=['Non-PCOS', 'PCOS'])
+            plt.grid()
+            st.pyplot(plt)  # Display plot in Streamlit
+            plt.clf()  # Clear the figure to avoid overlap in the next plots
+
+    
+resampled_data = prepare_resampled_data() # Use function above to get SMOTE dataframe
+
+# Create subsets for visualizations for each page
+hormone = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
+ 'PRG(ng/mL)', 'Pregnant(Y/N)']]
+qualityOfLife = resampled_data[['Age (yrs)','PCOS (Y/N)',
+ 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
+                   'Pimples(Y/N)', 'Reg.Exercise(Y/N)']]
+metabolic = resampled_data[['Age (yrs)','PCOS (Y/N)', 'BMI', 'Waist:Hip Ratio', 'RBS(mg/dl)',
+'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)', 'Pregnant(Y/N)', 'Reg.Exercise(Y/N)', 'Weight gain(Y/N)', 'Skin darkening (Y/N)']]
+fertility = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(days)', 
+'Follicle No. (L)', 'Follicle No. (R)', 'Avg. F size (L) (mm)', 
+                    'Avg. F size (R) (mm)', 'Endometrium (mm)', 'Pregnant(Y/N)', ]]
+
+
+# Call the prepare_resampled_data function to prepare data and store in session state
+if 'resampled_data' not in st.session_state:
+    st.session_state.resampled_data = prepare_resampled_data()
+    
 
 # Sidebar navigation
 st.sidebar.image(r"C:\Users\tanja\JN CMSE 830\Week 8\PCOS (1).png", use_column_width=True)
@@ -122,7 +251,7 @@ elif page == "Data":
 </p>""", unsafe_allow_html=True)
 
     st.markdown("""
-The clinical data for both the infertile and fertile datasets were collected across 10 hospitals in India and includes the following variables (variables in **bold** have binary encoding or ordinal encoding):
+The clinical data for both the infertile and fertile datasets were collected across 10 hospitals in India and includes the following variables (variables in **bold** have label encoding):
 
 - **PCOS (Y/N) (TARGET)**
 - Age (yrs)
@@ -167,20 +296,23 @@ The clinical data for both the infertile and fertile datasets were collected acr
 - Avg. F size (R) (mm)
 - Endometrium (mm)
 
-Before any data manipulation, missingingness and class/sub-class sizes need to be accessed.
+Before any data manipulation, missingingness and class/sub-class sizes need to be accessed. Overall, the data only contained a few missing values (Missing Completely at Random aka MCAR), so simply removing them does not interfere with how the data is observed. However, about 1/3 of patients are classified to have PCOS while 2/3 of patients are not, so SMOTE is used to ensure equal class distribution between non-PCOS and PCOS patients. How I processed my data is broken down below.
 """, unsafe_allow_html=True)
+
+    ### Note: Had to redo prepare_resampled_data() and visualize_missing_values() here to break it down on the data page
+    ### I kept getting errors intially doing it only here since this code block below and above is page specific & not on the entire app
     # Load data
     merged_df = load_data()
-    st.write("Merged DataFrame Shape:", merged_df.shape)
-    st.write(merged_df.head())  # Display first few rows
+    st.write("Initial (Merged) DataFrame Shape:", merged_df.shape)
+    st.write(merged_df.head()) # Display first few rows
+    st.write(merged_df.info()) # Display info
     # Visualize missing values
-    st.subheader("Missing Values Visualization")
+    st.subheader("Visualization/Heatmap of Missing Values in Dataframe to Access Missingness")
     visualize_missing_values(merged_df)
-    # Clear the current figure to avoid overlap
     plt.clf()
 
-    # Scale numeric features
-    merged_df = merged_df.apply(pd.to_numeric, errors='coerce')  # Convert to numeric and coerce errors
+    # # Scale numeric features
+    # merged_df = merged_df.apply(pd.to_numeric, errors='coerce')  # Convert to numeric and coerce errors
     merged_df = merged_df.dropna()  # Drop any rows with NA values
 
     # Define numeric columns to scale
@@ -202,7 +334,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     # Scale the numeric columns using z-score
     df_scaled = merged_df[true_numeric_cols].apply(zscore)
 
-    # Non-scaled columns to retain in the final DataFrame
+    # Non-scaled columns
     non_scaled_cols = [
     'Sl. No', 'Patient File No.', 'PCOS (Y/N)', 
     'Blood Group', 'Cycle(R/I)', 'Pregnant(Y/N)', 
@@ -212,10 +344,10 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     'Reg.Exercise(Y/N)'
 ]
 
-    # Concatenate scaled and non-scaled columns to create final DataFrame
+    # Combine scaled and non-scaled columns to create final df
     df_final = pd.concat([df_scaled, merged_df[non_scaled_cols]], axis=1)
 
-    # Visualize missing values
+    # Visualize missing values after removal
     st.subheader("Missing Values Visualization After Missingness Removal")
     visualize_missing_values(df_final)
     # Clear the current figure to avoid overlap
@@ -233,7 +365,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
 
     st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
 
-    # Implementing SMOTE
+    # SMOTE
     X = df_final.drop('PCOS (Y/N)', axis=1)
     y = df_final['PCOS (Y/N)']
     # Bar chart for class distribution before SMOTE
@@ -245,9 +377,9 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     st.pyplot(plt)
     # Clear the current figure to avoid overlap
     plt.clf()
-    st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
+    st.markdown("<br>", unsafe_allow_html=True)  # Add spacing
 
-    smote = SMOTE(random_state=42)
+    smote = SMOTE(random_state=42) # sets seed
     X_resampled, y_resampled = smote.fit_resample(X, y)
     resampled_data = pd.DataFrame(X_resampled, columns=X.columns)
     resampled_data['PCOS (Y/N)'] = y_resampled
@@ -257,7 +389,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     st.write(pd.Series(y_resampled).value_counts())
 
     # Show final DataFrame shape after resampling
-    st.write("Final DataFrame Shape after SMOTE:", X_resampled.shape)
+    st.write("Final DataFrame Shape after SMOTE (not including target column):", X_resampled.shape)
 
     # Separate the visualizations with some space
     st.markdown("<br>", unsafe_allow_html=True)  # Add a break for spacing
@@ -273,96 +405,6 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
 
 
-def plot_distributions(subset, title, numeric_columns, categorical_columns):
-    # Plot numeric columns as histograms
-    for col in numeric_columns:
-        if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
-            plt.figure(figsize=(10, 6))
-            sns.histplot(subset[subset['PCOS (Y/N)'] == 0][col], bins='auto', color='blue', 
-                         alpha=0.5, label='Non-PCOS', kde=True, stat='density')
-            sns.histplot(subset[subset['PCOS (Y/N)'] == 1][col], bins='auto', color='red', 
-                         alpha=0.5, label='PCOS', kde=True, stat='density')
-            plt.title(f'{title} - {col} Distribution')
-            plt.legend()
-            plt.xlim(subset[col].min() - 1, subset[col].max() + 1)  # Set x-axis limits
-            plt.grid()
-            st.pyplot(plt)  # Display plot in Streamlit
-            plt.clf()  # Clear the figure to avoid overlap in the next plots
-
-    # Plot categorical columns as bar plots
-    for col in categorical_columns:
-        if col in subset.columns and not subset[col].empty:
-            plt.figure(figsize=(10, 6))
-            sns.countplot(data=subset, x=col, hue='PCOS (Y/N)', palette=["blue", "red"])
-            plt.title(f'{title} - {col} Distribution')
-            plt.legend(title='PCOS (Y/N)', loc='upper right', labels=['Non-PCOS', 'PCOS'])
-            plt.grid()
-            st.pyplot(plt)  # Display plot in Streamlit
-            plt.clf()  # Clear the figure for the next plots
-def plot_correlations(subset, title):
-    # Calculate the correlation matrix
-    corr_matrix = subset.corr()
-
-    # 1. Print variables correlated with PCOS
-    st.subheader(f"{title} Correlation with PCOS (Y/N)")
-    pc_correlations = corr_matrix['PCOS (Y/N)']
-    for variable, value in pc_correlations.items():
-        if variable != 'PCOS (Y/N)' and (value > 0.2 or value < -0.1):
-            st.write(f"{variable}: {value:.2f}")
-
-    # 2. Print other variable correlations (excluding PCOS correlations)
-    st.subheader(f"Other {title} Variable Correlations")
-    correlation_results = []
-    for i in range(len(corr_matrix.columns)):
-        for j in range(i):
-            if (corr_matrix.iloc[i, j] > 0.2 or corr_matrix.iloc[i, j] < -0.1) and \
-                    (corr_matrix.columns[i] != 'PCOS (Y/N)' and corr_matrix.columns[j] != 'PCOS (Y/N)'):
-                correlation_results.append(f"{corr_matrix.columns[i]} and {corr_matrix.columns[j]}: {corr_matrix.iloc[i, j]:.2f}")
-
-    # Display correlation results in Streamlit
-    for result in correlation_results:
-        st.write(result)
-
-    # Create a heatmap for the correlation matrix
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', square=True, cbar_kws={"shrink": .8})
-    plt.title(f'{title} Correlation Matrix')
-    plt.xticks(rotation=45)
-    plt.yticks(rotation=0)
-    plt.tight_layout()  # Adjust layout to prevent clipping
-    st.pyplot(plt)  # Display plot in Streamlit
-    plt.clf()  # Clear the figure to avoid overlap in the next plots
-
-
-def plot_boxplots(subset, title, numeric_columns, categorical_columns=None):
-    # If categorical_columns is not provided, default to an empty list
-    if categorical_columns is None:
-        categorical_columns = []
-
-    # Plot numeric columns as box plots
-    for col in numeric_columns:
-        if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
-            plt.figure(figsize=(10, 6))
-            sns.boxplot(data=subset, x='PCOS (Y/N)', y=col, hue='PCOS (Y/N)', palette=["blue", "red"], legend=False)
-            plt.title(f'{title} - {col} Boxplot')
-            plt.xlabel('PCOS (Y/N)')
-            plt.ylabel(col)
-            plt.grid()
-            st.pyplot(plt)  # Display plot in Streamlit
-            plt.clf()  # Clear the figure to avoid overlap in the next plots
-
-    # Optionally plot categorical columns if provided
-    for col in categorical_columns:
-        if col in subset.columns and not subset[col].empty:
-            plt.figure(figsize=(10, 6))
-            sns.countplot(data=subset, x=col, hue='PCOS (Y/N)', palette=["blue", "red"])
-            plt.title(f'{title} - {col} Count')
-            plt.xlabel(col)
-            plt.ylabel('Count')
-            plt.legend(title='PCOS (Y/N)', loc='upper right', labels=['Non-PCOS', 'PCOS'])
-            plt.grid()
-            st.pyplot(plt)  # Display plot in Streamlit
-            plt.clf()  # Clear the figure to avoid overlap in the next plots
 
 # Create a title for the selected factor page
 if page == 'Hormone':
@@ -384,15 +426,15 @@ if page == 'Quality of Life':
     st.subheader("Quality of Life Data")
     st.write(qualityOfLife)  # Display quality of life data
     if st.button('Show Distributions'):
-        numeric_columns = []  # Define any numeric columns if needed
+        numeric_columns = []
         categorical_columns = ['PCOS (Y/N)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 
                                'hair growth(Y/N)', 'Skin darkening (Y/N)', 
                                'Hair loss(Y/N)', 'Pimples(Y/N)', 'Reg.Exercise(Y/N)']
         plot_distributions(qualityOfLife, "Quality of Life", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(qualityOfLife, "Quality of Life")
-    if st.button('Show Boxplots'):
-        plot_boxplots(qualityOfLife, "Quality of Life", numeric_columns, categorical_columns)
+    st.markdown(""" <br><br><div style="color: red;"> No numeric columns, so no boxplots </div>
+""", unsafe_allow_html=True)
 
 if page == 'Metabolic':
     st.title("Metabolic Analysis")
@@ -424,3 +466,5 @@ if page == 'Fertility':
         plot_correlations(fertility, "Fertility")
     if st.button('Show Boxplots'):
         plot_boxplots(fertility, "Fertility", numeric_columns)
+    
+        
