@@ -223,7 +223,7 @@ if 'resampled_data' not in st.session_state:
     
 
 # Sidebar navigation
-st.sidebar.image(r"C:\Users\tanja\JN CMSE 830\Week 8\PCOS (1).png", use_column_width=True)
+st.sidebar.image(r"PCOS (1).png", use_column_width=True)
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", ["Home", "Data", 'Hormone', 'Quality of Life', 'Metabolic', 'Fertility',"Nomogram Risk Assessment"], index=0)
 
