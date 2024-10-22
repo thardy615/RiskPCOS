@@ -57,7 +57,7 @@ def prepare_resampled_data():
     y = df_final['PCOS (Y/N)']
     y = y.loc[X.index]  # makes sure to only keep rows in y that match X
     
-    # apply SMOTE
+    # execute SMOTE
     smote = SMOTE(random_state=42) # sets seed
     X_resampled, y_resampled = smote.fit_resample(X, y) # resamples the data and returns the X array containing resampled data and their corresponding labels
 
@@ -67,13 +67,13 @@ def prepare_resampled_data():
 
 # Visualize missing values in heatmap
 def visualize_missing_values(data):
-    numeric_cols = data.select_dtypes(include=[np.number]).columns
-    data_subset = data[numeric_cols]
+    numeric_cols = data.select_dtypes(include=[np.number]).columns # Get numeric columns
+    data_subset = data[numeric_cols] # subset data with only numeric columns
 
-    nan_mask = data_subset.isna().astype(int).to_numpy()
+    nan_mask = data_subset.isna().astype(int).to_numpy() # create a boolean mask: True for NaN, False for finite values; convert boolean mask to integer (False becomes 0, True becomes 1)
 
-    plt.figure(figsize=(12, 6))
-    plt.imshow(nan_mask.T, interpolation='nearest', aspect='auto', cmap='viridis')
+    plt.figure(figsize=(12, 6)) # size the plot
+    plt.imshow(nan_mask.T, interpolation='nearest', aspect='auto', cmap='viridis') # imshow with interpolation set to 'nearest' and aspect to 'auto'
     plt.xlabel('Patient Index')
     plt.ylabel('Features')
     plt.title('Visualizing Missing Values in Data')
@@ -82,6 +82,7 @@ def visualize_missing_values(data):
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     st.pyplot(plt)
+    # This code was sourced from Murillow's code in Homework #4
 
 # Correlation plots   
 def plot_correlations(subset, title):
@@ -92,7 +93,7 @@ def plot_correlations(subset, title):
     st.subheader(f"{title} Correlation with PCOS (Y/N)") # title
     pc_correlations = corr_matrix['PCOS (Y/N)'] # pcos class correlations
     for variable, value in pc_correlations.items(): #
-        if variable != 'PCOS (Y/N)' and (value > 0.2 or value < -0.1):
+        if variable != 'PCOS (Y/N)' and (value > 0.2 or value < -0.1): # moderately positive or negative correlation
             st.write(f"{variable}: {value:.2f}")
 
     # Display correlations between other variables (excluding PCOS correlations)
@@ -109,24 +110,10 @@ def plot_correlations(subset, title):
         st.write(result)
 
     # Create an interactive heatmap using Plotly
-    fig = go.Figure(data=go.Heatmap(
-        z=corr_matrix.values,
-        x=corr_matrix.columns,
-        y=corr_matrix.columns,
-        colorscale='RdBu',
-        zmin=-1, zmax=1,
-        hoverongaps=False
-    ))
+    fig = go.Figure(data=go.Heatmap(z=corr_matrix.values, x=corr_matrix.columns, y=corr_matrix.columns, colorscale='RdBu', zmin=-1, zmax=1, hoverongaps=False))
 
     # Update layout
-    fig.update_layout(
-        title=f'{title} Correlation Matrix',
-        xaxis_nticks=36,
-        margin=dict(l=40, r=40, t=40, b=40),
-        height=600,
-        width=800
-    )
-
+    fig.update_layout(title=f'{title} Correlation Matrix', xaxis_nticks=36, margin=dict(l=40, r=40, t=40, b=40), height=600, width=800)
     st.plotly_chart(fig)
 
 # Histogram Plots    
@@ -137,18 +124,9 @@ def plot_distributions(subset, title, numeric_columns, categorical_columns):
             # Create histograms for Non-PCOS and PCOS
             fig = ff.create_distplot(
                 [subset[subset['PCOS (Y/N)'] == 0][col].dropna(), subset[subset['PCOS (Y/N)'] == 1][col].dropna()],
-                group_labels=['Non-PCOS', 'PCOS'],
-                show_hist=True, show_rug=True, bin_size='auto'
-            )
+                group_labels=['Non-PCOS', 'PCOS'], show_hist=True, show_rug=True, bin_size='auto')
             # Add title and labels
-            fig.update_layout(
-                title=f'{title} - {col} Distribution',
-                xaxis_title=col,
-                yaxis_title='Density',
-                legend_title='PCOS (Y/N)',
-                margin=dict(l=40, r=40, t=40, b=40)
-            )
-            
+            fig.update_layout(title=f'{title} - {col} Distribution', xaxis_title=col, yaxis_title='Density', legend_title='PCOS (Y/N)',margin=dict(l=40, r=40, t=40, b=40))
             st.plotly_chart(fig)  # plot
 
     # Plot categorical columns as interactive bar plots
@@ -189,6 +167,7 @@ fertility = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(days)',
 
 
 # Call the prepare_resampled_data function to prepare data and store in session state
+# Just in case, since I kept running into trouble
 if 'resampled_data' not in st.session_state:
     st.session_state.resampled_data = prepare_resampled_data()
     
@@ -196,7 +175,7 @@ if 'resampled_data' not in st.session_state:
 # Sidebar navigation
 st.sidebar.image(r"PCOS (1).png", use_column_width=True)
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Data", 'Hormone', 'Quality of Life', 'Metabolic', 'Fertility',"Nomogram Risk Assessment"], index=0)
+page = st.sidebar.radio("Go to", ["Home", "Data", 'Hormone IDA/EDA', 'Quality of Life IDA/EDA', 'Metabolic IDA/EDA', 'Fertility IDA/EDA',"Principal Component Analysis", "Cluster Analysis", "Nomogram Risk Assessment"], index=0)
 
 
 # Home Page (default)
@@ -436,4 +415,14 @@ if page == 'Fertility':
     if st.button('Show Boxplots'):
         plot_boxplots(fertility, "Fertility", numeric_columns)
     
-        
+if page == 'Principal Component Analysis':
+    st.title("Principal Component Analysis (PCA)")
+    st.subheader("Coming Soon!")
+
+if page == 'Cluster Analysis':
+    st.title("Cluster Analysis")
+    st.subheader("Coming Soon!")
+
+if page == 'Nomogram Risk Assessment':
+    st.title("Nomogram Risk Assessment")
+    st.subheader("Coming Soon!")
