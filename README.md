@@ -1,12 +1,13 @@
-# RiskPCOS
-CMSE 830 Midterm
+--CMSE 830 Midterm--
 
-git clone repo
+RiskPCOS: A Polycystic Ovarian Syndrome (PCOS) Risk Assessment
 
-in terminal, type :
+https://riskpcos-rcyygyizzwkw7pawagfz9m.streamlit.app/#riskpcos-a-polycystic-ovarian-syndrome-pcos-risk-assessment
 
-conda activate streamlitenv
+This app aims to predict PCOS diagnosis via risk assessment among fertile women and compare hormonal. metabolic, fertility, and lifestyle measures among infertile and fertile women with/without PCOS. Users can explore IDA and EDA across these categories to gain an understanding on how these variables are impacted by PCOS. In the future, users will interact with a nomogram created from a regression model to visualize how risk for PCOS changes depending on how variables change.
 
-then
+If you would like to run these files locally to this streamlit app, do the following:
 
-!streamlit run midterm_Streamlit.py
+First, git clone this repo. 
+Then in terminal, type: conda activate streamlitenv
+                        !streamlit run midterm_Streamlit.py
