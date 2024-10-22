@@ -175,7 +175,7 @@ if 'resampled_data' not in st.session_state:
 # Sidebar navigation
 st.sidebar.image(r"PCOS (1).png", use_column_width=True)
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Data", 'Hormone IDA/EDA', 'Quality of Life IDA/EDA', 'Metabolic IDA/EDA', 'Fertility IDA/EDA',"Principal Component Analysis", "Cluster Analysis", "Nomogram Risk Assessment"], index=0)
+page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: Quality of Life', 'IDA/EDA: Metabolic', 'IDA/EDA: Fertility',"Principal Component Analysis", "Cluster Analysis", "Nomogram Risk Assessment"], index=0)
 
 
 # Home Page (default)
