@@ -64,6 +64,7 @@ def prepare_resampled_data():
     resampled_data = pd.DataFrame(X_resampled, columns=X.columns) # recreate data frame
     resampled_data['PCOS (Y/N)'] = y_resampled # Get target column in new data frame
     return resampled_data #return data frame after SMOTE, which should now have even data for PCOS and non-PCOS
+    # Code above was sourced from Murillo's code in homework #5
 
 # Visualize missing values in heatmap
 def visualize_missing_values(data):
@@ -355,7 +356,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
 
 # Create a title for the selected factor page
-if page == 'Hormone':
+if page == 'IDA/EDA: Hormone':
     st.title("Hormone Analysis")
     st.subheader("Hormone Data")
     st.write(hormone)  # Display hormone data
@@ -369,7 +370,7 @@ if page == 'Hormone':
     if st.button('Show Boxplots'):
         plot_boxplots(hormone, "Hormone", numeric_columns)
 
-if page == 'Quality of Life':
+if page == 'IDA/EDA: Quality of Life':
     st.title("Quality of Life Analysis")
     st.subheader("Quality of Life Data")
     st.write(qualityOfLife)  # Display quality of life data
@@ -384,7 +385,7 @@ if page == 'Quality of Life':
     st.markdown(""" <br><br><div style="color: red;"> No numeric columns, so no boxplots </div>
 """, unsafe_allow_html=True)
 
-if page == 'Metabolic':
+if page == 'IDA/EDA: Metabolic':
     st.title("Metabolic Analysis")
     st.subheader("Metabolic Data")
     st.write(metabolic)  # Display metabolic data
