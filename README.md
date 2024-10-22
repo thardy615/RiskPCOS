@@ -10,6 +10,7 @@ If you would like to run these files locally to this streamlit app, do the follo
 
 First, git clone this repo. 
 Then in terminal, type: 
+
 conda activate streamlitenv
 
 and then
