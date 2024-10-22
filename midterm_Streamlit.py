@@ -172,34 +172,13 @@ def plot_distributions(subset, title, numeric_columns, categorical_columns):
 
 # Box Plots
 def plot_boxplots(subset, title, numeric_columns, categorical_columns=None):
-    # If categorical_columns is not provided, default to an empty list
-    if categorical_columns is None:
-        categorical_columns = []
-
     # Plot numeric columns as box plots
     for col in numeric_columns:
-        if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
-            plt.figure(figsize=(10, 6))
-            sns.boxplot(data=subset, x='PCOS (Y/N)', y=col, hue='PCOS (Y/N)', palette=["blue", "red"], legend=False)
-            plt.title(f'{title} - {col} Boxplot')
-            plt.xlabel('PCOS (Y/N)')
-            plt.ylabel(col)
-            plt.grid()
-            st.pyplot(plt)  # Display plot in Streamlit
-            plt.clf()  # Clear the figure to avoid overlap in the next plots
-
-    # Optionally plot categorical columns if provided
-    for col in categorical_columns:
-        if col in subset.columns and not subset[col].empty:
-            plt.figure(figsize=(10, 6))
-            sns.countplot(data=subset, x=col, hue='PCOS (Y/N)', palette=["blue", "red"])
-            plt.title(f'{title} - {col} Count')
-            plt.xlabel(col)
-            plt.ylabel('Count')
-            plt.legend(title='PCOS (Y/N)', loc='upper right', labels=['Non-PCOS', 'PCOS'])
-            plt.grid()
-            st.pyplot(plt)  # Display plot in Streamlit
-            plt.clf()  # Clear the figure to avoid overlap in the next plots
+    if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
+        fig = px.box(subset, x='PCOS (Y/N)', y=col, color='PCOS (Y/N)', 
+                title=f'{title} - {col} Boxplot', color_discrete_map={'0': 'blue', '1': 'red'})
+        fig.update_layout(xaxis_title='PCOS (Y/N)', yaxis_title=col, boxmode='group', showlegend=False) # Group box plots by PCOS (Y/N)
+        st.plotly_chart(fig)  # Display interactive plot in Streamlit
 
     
 resampled_data = prepare_resampled_data() # Use function above to get SMOTE dataframe
