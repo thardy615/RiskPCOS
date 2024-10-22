@@ -169,16 +169,30 @@ def plot_distributions(subset, title, numeric_columns, categorical_columns):
             
             st.plotly_chart(fig)  # Plot
 
-
 # Box Plots
-def plot_boxplots(subset, title, numeric_columns, categorical_columns=None):
-    # Plot numeric columns as box plots
+def plot_boxplots(subset, title, numeric_columns):
+    # Plot numeric columns as interactive box plots
     for col in numeric_columns:
         if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
-            fig = px.box(subset, x='PCOS (Y/N)', y=col, color='PCOS (Y/N)', 
-                title=f'{title} - {col} Boxplot', color_discrete_map={'0': 'blue', '1': 'red'})
-            fig.update_layout(xaxis_title='PCOS (Y/N)', yaxis_title=col, boxmode='group', showlegend=False) # Group box plots by PCOS (Y/N)
-            st.plotly_chart(fig)  # Display interactive plot in Streamlit
+            # Create box plot for the current numeric column
+            fig = px.box(
+                subset, 
+                x='PCOS (Y/N)', 
+                y=col, 
+                color='PCOS (Y/N)', 
+                title=f'{title} - {col} Boxplot', 
+                color_discrete_map={'0': 'blue', '1': 'red'},
+                points='all'  # Show all points on the plot for better visualization
+            )
+
+            # Update layout to ensure clarity
+            fig.update_layout(
+                xaxis_title='PCOS (Y/N)',
+                yaxis_title=col,
+                margin=dict(l=40, r=40, t=40, b=40)
+            )
+
+            st.plotly_chart(fig)  # Display the plot in Streamlit
 
     
 resampled_data = prepare_resampled_data() # Use function above to get SMOTE dataframe
