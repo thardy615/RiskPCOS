@@ -174,11 +174,11 @@ def plot_distributions(subset, title, numeric_columns, categorical_columns):
 def plot_boxplots(subset, title, numeric_columns, categorical_columns=None):
     # Plot numeric columns as box plots
     for col in numeric_columns:
-    if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
-        fig = px.box(subset, x='PCOS (Y/N)', y=col, color='PCOS (Y/N)', 
+        if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
+            fig = px.box(subset, x='PCOS (Y/N)', y=col, color='PCOS (Y/N)', 
                 title=f'{title} - {col} Boxplot', color_discrete_map={'0': 'blue', '1': 'red'})
-        fig.update_layout(xaxis_title='PCOS (Y/N)', yaxis_title=col, boxmode='group', showlegend=False) # Group box plots by PCOS (Y/N)
-        st.plotly_chart(fig)  # Display interactive plot in Streamlit
+            fig.update_layout(xaxis_title='PCOS (Y/N)', yaxis_title=col, boxmode='group', showlegend=False) # Group box plots by PCOS (Y/N)
+            st.plotly_chart(fig)  # Display interactive plot in Streamlit
 
     
 resampled_data = prepare_resampled_data() # Use function above to get SMOTE dataframe
