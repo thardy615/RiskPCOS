@@ -166,8 +166,7 @@ def plot_boxplots(subset, title, numeric_columns):
     for col in numeric_columns:
         if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
             # Create box plot for the current numeric column
-            fig = px.box(subset, x='PCOS (Y/N)', y=col, color='PCOS (Y/N)', title=f'{title} - {col} Boxplot', 
-                         points='all'  # Show all points on the plot for better visualization)
+            fig = px.box(subset, x='PCOS (Y/N)', y=col, color='PCOS (Y/N)', title=f'{title} - {col} Boxplot', points='all')  # Show all points on the plot for better visualization
 
             # Update layout to ensure clarity
             fig.update_layout(xaxis_title='PCOS (Y/N)', yaxis_title=col, margin=dict(l=40, r=40, t=40, b=40))
