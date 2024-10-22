@@ -9,6 +9,9 @@ This app aims to predict PCOS diagnosis via risk assessment among fertile women 
 If you would like to run these files locally to this streamlit app, do the following:
 
 First, git clone this repo. 
-Then in terminal, type: conda activate streamlitenv
+Then in terminal, type: 
+conda activate streamlitenv
 
-                        !streamlit run midterm_Streamlit.py
+and then
+
+!streamlit run midterm_Streamlit.py
