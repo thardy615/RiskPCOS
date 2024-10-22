@@ -410,7 +410,7 @@ if page == 'IDA/EDA: Metabolic':
         plot_boxplots(metabolic, "Metabolic", numeric_columns)
 
 
-if page == 'Fertility':
+if page == 'IDA/EDA: Fertility':
     st.title("Fertility Analysis")
     st.subheader("Fertility Data")
     st.write(fertility)  # Display fertility data
