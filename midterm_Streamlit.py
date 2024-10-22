@@ -404,10 +404,10 @@ if page == 'Hormone':
     st.title("Hormone Analysis")
     st.subheader("Hormone Data")
     st.write(hormone)  # Display hormone data
-    if st.button('Show Distributions'):
-        numeric_columns = ['Age (yrs)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 
+    numeric_columns = ['Age (yrs)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 
                            'PRL(ng/mL)', 'PRG(ng/mL)']
-        categorical_columns = ['PCOS (Y/N)', 'Pregnant(Y/N)']
+    categorical_columns = ['PCOS (Y/N)', 'Pregnant(Y/N)']
+    if st.button('Show Distributions'):
         plot_distributions(hormone, "Hormone", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(hormone, "Hormone")
