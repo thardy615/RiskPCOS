@@ -397,8 +397,6 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
 
     st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
 
-
-
 # Create a title for the selected factor page
 if page == 'Hormone':
     st.title("Hormone Analysis")
@@ -406,7 +404,7 @@ if page == 'Hormone':
     st.write(hormone)  # Display hormone data
     numeric_columns = ['Age (yrs)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 
                            'PRL(ng/mL)', 'PRG(ng/mL)']
-    categorical_columns = ['PCOS (Y/N)', 'Pregnant(Y/N)']
+    categorical_columns = ['Pregnant(Y/N)']
     if st.button('Show Distributions'):
         plot_distributions(hormone, "Hormone", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
@@ -418,11 +416,11 @@ if page == 'Quality of Life':
     st.title("Quality of Life Analysis")
     st.subheader("Quality of Life Data")
     st.write(qualityOfLife)  # Display quality of life data
-    if st.button('Show Distributions'):
-        numeric_columns = []
-        categorical_columns = ['PCOS (Y/N)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 
+    numeric_columns = []
+    categorical_columns = ['Pregnant(Y/N)', 'Weight gain(Y/N)', 
                                'hair growth(Y/N)', 'Skin darkening (Y/N)', 
                                'Hair loss(Y/N)', 'Pimples(Y/N)', 'Reg.Exercise(Y/N)']
+    if st.button('Show Distributions'):
         plot_distributions(qualityOfLife, "Quality of Life", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(qualityOfLife, "Quality of Life")
@@ -433,11 +431,11 @@ if page == 'Metabolic':
     st.title("Metabolic Analysis")
     st.subheader("Metabolic Data")
     st.write(metabolic)  # Display metabolic data
-    if st.button('Show Distributions'):
-        numeric_columns = ['BMI', 'Waist:Hip Ratio', 'RBS(mg/dl)', 
+    numeric_columns = ['BMI', 'Waist:Hip Ratio', 'RBS(mg/dl)', 
                            'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)']
-        categorical_columns = ['PCOS (Y/N)', 'Pregnant(Y/N)', 'Reg.Exercise(Y/N)', 
+    categorical_columns = ['Pregnant(Y/N)', 'Reg.Exercise(Y/N)', 
                                'Weight gain(Y/N)', 'Skin darkening (Y/N)']
+    if st.button('Show Distributions'):
         plot_distributions(metabolic, "Metabolic", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(metabolic, "Metabolic")
@@ -449,11 +447,11 @@ if page == 'Fertility':
     st.title("Fertility Analysis")
     st.subheader("Fertility Data")
     st.write(fertility)  # Display fertility data
-    if st.button('Show Distributions'):
-        numeric_columns = ['Cycle length(days)', 'Follicle No. (L)', 
+    numeric_columns = ['Cycle length(days)', 'Follicle No. (L)', 
                            'Follicle No. (R)', 'Avg. F size (L) (mm)', 
                            'Avg. F size (R) (mm)', 'Endometrium (mm)']
-        categorical_columns = ['PCOS (Y/N)', 'Pregnant(Y/N)']
+    categorical_columns = ['Pregnant(Y/N)']
+    if st.button('Show Distributions'):
         plot_distributions(fertility, "Fertility", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(fertility, "Fertility")
