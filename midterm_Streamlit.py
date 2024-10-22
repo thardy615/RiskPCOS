@@ -8,6 +8,7 @@ from scipy.stats import zscore
 import plotly.express as px
 import plotly.figure_factory as ff
 import plotly.graph_objects as go
+import io
 
 ### Creating functions ###
 
@@ -38,6 +39,7 @@ def prepare_resampled_data():
     merged_df = load_data()
     merged_df = merged_df.apply(pd.to_numeric, errors='coerce') # Coerce to numeric columns
     merged_df = merged_df.dropna() # Drop NAs
+    # Decided to do this after assessing missingness^
     
     true_numeric_cols = ['Age (yrs)', 'Weight (Kg)', 'Height(Cm)', 'BMI', 'Pulse rate(bpm)', 'RR (breaths/min)', 'Hb(g/dl)', 'Cycle length(days)', 
                      'Marraige Status (Yrs)', 'No. of aborptions','I   beta-HCG(mIU/mL)', 'II    beta-HCG(mIU/mL)', 
@@ -45,7 +47,6 @@ def prepare_resampled_data():
                      'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 'Vit D3 (ng/mL)', 'PRG(ng/mL)', 'RBS(mg/dl)',
                      'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)', 'Follicle No. (L)', 'Follicle No. (R)', 'Avg. F size (L) (mm)', 
                     'Avg. F size (R) (mm)', 'Endometrium (mm)']
-    # df_scaled = merged_df[true_numeric_cols].apply(zscore)
     df_scaled = merged_df[true_numeric_cols] # this is not scaled for right now, but will be when regression model is produced
     non_scaled_cols = ['Sl. No', 'Patient File No.', 'PCOS (Y/N)', 'Blood Group', 'Cycle(R/I)', 'Pregnant(Y/N)', 
                    'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
@@ -82,8 +83,8 @@ def visualize_missing_values(data):
     plt.xticks(np.linspace(0, nan_mask.shape[0]-1, min(10, nan_mask.shape[0])).astype(int))
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 
-    st.pyplot(plt)
-    # This code was sourced from Murillow's code in Homework #4
+    st.pyplot(plt) # Plot
+    # This code was sourced from Murillo's code in Homework #4
 
 # Correlation plots   
 def plot_correlations(subset, title):
@@ -93,65 +94,67 @@ def plot_correlations(subset, title):
     # Display variables correlated with PCOS
     st.subheader(f"{title} Correlation with PCOS (Y/N)") # title
     pc_correlations = corr_matrix['PCOS (Y/N)'] # pcos class correlations
-    for variable, value in pc_correlations.items(): #
-        if variable != 'PCOS (Y/N)' and (value > 0.2 or value < -0.1): # moderately positive or negative correlation
-            st.write(f"{variable}: {value:.2f}")
+    for variable, value in pc_correlations.items(): # for each variable and it's respective correlation value with PCOS
+        if variable != 'PCOS (Y/N)' and (value > 0.2 or value < -0.1): # If the correlation is < -0.1 but > 0.2,
+            st.write(f"{variable}: {value:.2f}") # Print the variable and its correlation with PCOS
 
     # Display correlations between other variables (excluding PCOS correlations)
     st.subheader(f"Other {title} Variable Correlations")
     correlation_results = []
     for i in range(len(corr_matrix.columns)):
         for j in range(i):
-            if (corr_matrix.iloc[i, j] > 0.2 or corr_matrix.iloc[i, j] < -0.1) and \
-                    (corr_matrix.columns[i] != 'PCOS (Y/N)' and corr_matrix.columns[j] != 'PCOS (Y/N)'):
-                correlation_results.append(f"{corr_matrix.columns[i]} and {corr_matrix.columns[j]}: {corr_matrix.iloc[i, j]:.2f}")
-
+            if (corr_matrix.iloc[i, j] > 0.2 or corr_matrix.iloc[i, j] < -0.1) and \ # If the correlation is < -0.1 but > 0.2
+                    (corr_matrix.columns[i] != 'PCOS (Y/N)' and corr_matrix.columns[j] != 'PCOS (Y/N)'): # and if the variable of said correlation is not PCOS
+                correlation_results.append(f"{corr_matrix.columns[i]} and {corr_matrix.columns[j]}: {corr_matrix.iloc[i, j]:.2f}") # Print the variable and its correlation with another
     # Display correlation results in app
     for result in correlation_results:
         st.write(result)
 
-    # Create an interactive heatmap using Plotly
+    # interactive heatmap using Plotly
     fig = go.Figure(data=go.Heatmap(z=corr_matrix.values, x=corr_matrix.columns, y=corr_matrix.columns, colorscale='RdBu', zmin=-1, zmax=1, hoverongaps=False))
 
     # Update layout
     fig.update_layout(title=f'{title} Correlation Matrix', xaxis_nticks=36, margin=dict(l=40, r=40, t=40, b=40), height=600, width=800)
-    st.plotly_chart(fig)
+    st.plotly_chart(fig) # Plot
+# ChatGPT 4o was utilized (for corrections on code in midterm.ipynb since streamlit was not utilized in that file) for the above code on 10/19/24
 
 # Histogram Plots    
 def plot_distributions(subset, title, numeric_columns, categorical_columns):
     # Plot numeric columns as interactive histograms with rug plots
-    for col in numeric_columns:
-        if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
+    for col in numeric_columns: # for each numeric column
+        if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty: # For columns in subset, excluding target
             # Create histograms for Non-PCOS and PCOS
             fig = ff.create_distplot(
-                [subset[subset['PCOS (Y/N)'] == 0][col].dropna(), subset[subset['PCOS (Y/N)'] == 1][col].dropna()],
-                group_labels=['Non-PCOS', 'PCOS'], show_hist=True, show_rug=True, bin_size='auto')
+                [subset[subset['PCOS (Y/N)'] == 0][col], subset[subset['PCOS (Y/N)'] == 1][col]], # Separate data for Non-PCOS and PCOS groups 
+                group_labels=['Non-PCOS', 'PCOS'], show_hist=True, show_rug=True, bin_size='auto') # Include labels (targets), create both a rug plot and histogram, and automatically determine bin size
             # Add title and labels
             fig.update_layout(title=f'{title} - {col} Distribution', xaxis_title=col, yaxis_title='Density', legend_title='PCOS (Y/N)',margin=dict(l=40, r=40, t=40, b=40))
             st.plotly_chart(fig)  # plot
 
     # Plot categorical columns as interactive bar plots
-    for col in categorical_columns:
-        if col in subset.columns and not subset[col].empty:
-            fig = px.histogram(
-                subset, x=col, color='PCOS (Y/N)', barmode='group', title=f'{title} - {col} Distribution')
+    for col in categorical_columns: # for each numeric column
+        if col in subset.columns and not subset[col].empty: # For columns in subset, excluding target
+            # Create histograms for Non-PCOS and PCOS
+            fig = px.histogram( subset, x=col, color='PCOS (Y/N)', barmode='group', title=f'{title} - {col} Distribution') # Title is based on column/variable name
             # Update layout
-            fig.update_layout(xaxis_title=col, yaxis_title='Count', legend_title='PCOS (Y/N)', margin=dict(l=40, r=40, t=40, b=40))
+            fig.update_layout(xaxis_title=col, yaxis_title='Count', legend_title='PCOS (Y/N)', margin=dict(l=40, r=40, t=40, b=40)) # Includes (equal) margin space around plot area
             st.plotly_chart(fig)  # Plot
 
 # Box Plots
 def plot_boxplots(subset, title, numeric_columns):
     # Plot numeric columns as interactive box plots
-    for col in numeric_columns:
-        if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
+    for col in numeric_columns: # for each numeric column
+        if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty: # For columns in subset, excluding target
             # Create box plot for the current numeric column
             fig = px.box(subset, x='PCOS (Y/N)', y=col, color='PCOS (Y/N)', title=f'{title} - {col} Boxplot', points='all')  # Show all points on the plot for better visualization
+            # However, given outliers, I am considering removing. Consult with Murillo/Max later
 
-            # Update layout to ensure clarity
-            fig.update_layout(xaxis_title='PCOS (Y/N)', yaxis_title=col, margin=dict(l=40, r=40, t=40, b=40))
-            st.plotly_chart(fig)  # Display the plot in Streamlit
+            # Update layout
+            fig.update_layout(xaxis_title='PCOS (Y/N)', yaxis_title=col, margin=dict(l=40, r=40, t=40, b=40)) # Includes (equal) margin space around plot area
+            st.plotly_chart(fig)  # Plot
 
-    
+######################################################
+
 resampled_data = prepare_resampled_data() # Use function above to get SMOTE dataframe
 
 # Create subsets for visualizations for each page
@@ -176,7 +179,7 @@ if 'resampled_data' not in st.session_state:
 # Sidebar navigation
 st.sidebar.image(r"PCOS (1).png", use_column_width=True)
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: Quality of Life', 'IDA/EDA: Metabolic', 'IDA/EDA: Fertility',"Principal Component Analysis", "Cluster Analysis", "Nomogram Risk Assessment"], index=0)
+page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: Quality of Life', 'IDA/EDA: Metabolic', 'IDA/EDA: Fertility',"Principal Component Analysis", "Cluster Analysis", "Normal Lab Work Results", "Nomogram Risk Assessment"], index=0)
 
 
 # Home Page (default)
@@ -193,7 +196,6 @@ if page == "Home":
 """, unsafe_allow_html=True)
 
 # Data Page:
-
 elif page == "Data":
     st.markdown("""<h1 style='color: pink;'><strong>Data Source and Data Manipulation </h1>""", unsafe_allow_html=True)
     # Footer about data
@@ -256,14 +258,22 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     merged_df = load_data()
     st.write("Initial (Merged) DataFrame Shape:", merged_df.shape)
     st.write(merged_df.head()) # Display first few rows
-    st.write(merged_df.info()) # Display info
+
+    # Capture the output of df.info() in a string buffer
+    buffer = io.StringIO()
+    merged_df.info(buf=buffer)
+    info_str = buffer.getvalue()  # Get the string content of the buffer
+    # Display df.info() using Streamlit
+    st.write("Variable information:")
+    st.text(info_str)  # Use st.text() for plain text display
+    # Display df.describe() directly using Streamlit
+    st.write(merged_df.describe())
+    # The chunk of code above was sourced from ChatGPT 4o on 10/20/2024
+
     # Visualize missing values
     st.subheader("Visualization/Heatmap of Missing Values in Dataframe to Access Missingness")
     visualize_missing_values(merged_df)
     plt.clf()
-
-    # # Scale numeric features
-    # merged_df = merged_df.apply(pd.to_numeric, errors='coerce')  # Convert to numeric and coerce errors
     merged_df = merged_df.dropna()  # Drop any rows with NA values
 
     # Define numeric columns to scale
@@ -355,7 +365,6 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
 
     st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
 
-# Create a title for the selected factor page
 if page == 'IDA/EDA: Hormone':
     st.title("Hormone Analysis")
     st.subheader("Hormone Data")
@@ -426,4 +435,8 @@ if page == 'Cluster Analysis':
 
 if page == 'Nomogram Risk Assessment':
     st.title("Nomogram Risk Assessment")
+    st.subheader("Coming Soon!")
+    
+if page == "Normal Lab Work Results":
+    st.title("Normal Lab Work Results")
     st.subheader("Coming Soon!")
