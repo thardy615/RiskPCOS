@@ -155,18 +155,9 @@ def plot_distributions(subset, title, numeric_columns, categorical_columns):
     for col in categorical_columns:
         if col in subset.columns and not subset[col].empty:
             fig = px.histogram(
-                subset, x=col, color='PCOS (Y/N)', barmode='group',
-                color_discrete_map={"Non-PCOS": "blue", "PCOS": "red"},
-                title=f'{title} - {col} Distribution'
-            )
+                subset, x=col, color='PCOS (Y/N)', barmode='group', title=f'{title} - {col} Distribution')
             # Update layout
-            fig.update_layout(
-                xaxis_title=col,
-                yaxis_title='Count',
-                legend_title='PCOS (Y/N)',
-                margin=dict(l=40, r=40, t=40, b=40)
-            )
-            
+            fig.update_layout(xaxis_title=col, yaxis_title='Count', legend_title='PCOS (Y/N)', margin=dict(l=40, r=40, t=40, b=40))
             st.plotly_chart(fig)  # Plot
 
 # Box Plots
@@ -175,23 +166,11 @@ def plot_boxplots(subset, title, numeric_columns):
     for col in numeric_columns:
         if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty:
             # Create box plot for the current numeric column
-            fig = px.box(
-                subset, 
-                x='PCOS (Y/N)', 
-                y=col, 
-                color='PCOS (Y/N)', 
-                title=f'{title} - {col} Boxplot', 
-                color_discrete_map={'0': 'blue', '1': 'red'},
-                points='all'  # Show all points on the plot for better visualization
-            )
+            fig = px.box(subset, x='PCOS (Y/N)', y=col, color='PCOS (Y/N)', title=f'{title} - {col} Boxplot', 
+                         points='all'  # Show all points on the plot for better visualization)
 
             # Update layout to ensure clarity
-            fig.update_layout(
-                xaxis_title='PCOS (Y/N)',
-                yaxis_title=col,
-                margin=dict(l=40, r=40, t=40, b=40)
-            )
-
+            fig.update_layout(xaxis_title='PCOS (Y/N)', yaxis_title=col, margin=dict(l=40, r=40, t=40, b=40))
             st.plotly_chart(fig)  # Display the plot in Streamlit
 
     
