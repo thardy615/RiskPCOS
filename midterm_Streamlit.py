@@ -168,6 +168,12 @@ metabolic = resampled_data[['Age (yrs)','PCOS (Y/N)', 'BMI', 'Waist:Hip Ratio', 
 fertility = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(days)', 
 'Follicle No. (L)', 'Follicle No. (R)', 'Avg. F size (L) (mm)', 
                     'Avg. F size (R) (mm)', 'Endometrium (mm)', 'Pregnant(Y/N)', ]]
+# Variables that correlated with PCOS
+model_data = resample_data[['Age (yrs)','AMH(ng/mL)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 
+                   'Pimples(Y/N)', 'BMI', 'Follicle No. (L)', 'Follicle No. (R)','Cycle length(days)', , 'PCOS (Y/N)']]
+features = ['Age (yrs)','AMH(ng/mL)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 
+                   'Pimples(Y/N)', 'BMI', 'Follicle No. (L)', 'Follicle No. (R)','Cycle length(days)', , 'PCOS (Y/N)']
+
 
 
 # Call the prepare_resampled_data function to prepare data and store in session state
@@ -424,10 +430,57 @@ if page == 'IDA/EDA: Fertility':
         plot_correlations(fertility, "Fertility")
     if st.button('Show Boxplots'):
         plot_boxplots(fertility, "Fertility", numeric_columns)
-    
+
+# Correlation Analysis revealed the following variables correlate with PCOS:
+# Age, AMH, Pregnant (Y/N), Weight Gain(Y/N), Hair Growth (Y/N), Skin Darkening (Y/N), Pimples (Y/N), BMI, Cycle length(days), Follicle No. (L), Follicle No. (R)
+# These variables with be used in further analysis 
 if page == 'Principal Component Analysis':
     st.title("Principal Component Analysis (PCA)")
-    st.subheader("Coming Soon!")
+    # Display a brief introduction or description
+    st.subheader("Explore dimensionality reduction using PCA.")
+    st.write("""
+        Principal Component Analysis (PCA) helps in reducing the dimensionality of data 
+        while retaining most of the variance. Below, you can interact with the PCA plot 
+        and visualize the relationships between the principal components.
+    """)
+
+    # Sidebar for interactivity
+    st.sidebar.header("PCA Configuration")
+    selected_features = st.sidebar.multiselect("Select features for PCA", features, default=features[:-1])
+    color_by = st.sidebar.selectbox("Color by:", ['PCOS (Y/N)'])
+
+    # Ensure features are selected
+    if len(selected_features) < 2:
+        st.error("Please select at least two features for PCA.")
+    else:
+        # Standardize the features
+        scaler = StandardScaler()
+        scaled_data = scaler.fit_transform(model_data[selected_features])
+
+        # Perform PCA
+        pca = PCA()
+        components = pca.fit_transform(scaled_data)
+
+        # Explained variance ratio
+        explained_variance = pca.explained_variance_ratio_ * 100
+        labels = {str(i): f"PC {i+1} ({var:.1f}%)" for i, var in enumerate(explained_variance)}
+
+        # Create scatter matrix plot
+        fig = px.scatter_matrix(
+            components,
+            labels=labels,
+            dimensions=range(min(12, len(explained_variance))),  # Show up to 12 PCs
+            color=model_data[color_by],
+        )
+        fig.update_traces(diagonal_visible=False)
+
+        # Display the plot in Streamlit
+        st.plotly_chart(fig)
+
+        # Optionally, show explained variance
+        st.sidebar.write("Explained Variance Ratios:")
+        for i, var in enumerate(explained_variance[:12]):  # Show up to 12 PCs
+            st.sidebar.write(f"PC {i+1}: {var:.2f}%")
 
 if page == 'Cluster Analysis':
     st.title("Cluster Analysis")
