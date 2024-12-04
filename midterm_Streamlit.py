@@ -472,8 +472,10 @@ if page == 'Principal Component Analysis':
 
         # Explained variance ratio
         explained_variance = pca.explained_variance_ratio_ * 100
-        labels = {str(i): f"PC {i+1} ({var:.1f}%)" for i, var in enumerate(explained_variance)}
-
+        labels = {
+            str(i): f"{selected_features[i]} ({explained_variance[i]:.1f}%)"
+            for i in range(len(selected_features))
+        }
         # Create scatter matrix plot
         fig = px.scatter_matrix(
             components,
@@ -483,7 +485,11 @@ if page == 'Principal Component Analysis':
             color_discrete_map={'1': 'red', '0': 'pink'} 
         )
         fig.update_traces(diagonal_visible=True)
-        fig.update_layout(yaxis_tickangle=0)
+        fig.update_layout(
+            xaxis_tickangle=0,  # X-axis labels horizontal
+            yaxis_tickangle=1,  # Y-axis labels horizontal
+            autosize=True
+        )
 
         # Display the plot in Streamlit
         st.plotly_chart(fig)
