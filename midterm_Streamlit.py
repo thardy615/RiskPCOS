@@ -157,6 +157,11 @@ def plot_boxplots(subset, title, numeric_columns):
 
 resampled_data = prepare_resampled_data() # Use function above to get SMOTE dataframe
 
+# Call the prepare_resampled_data function to prepare data and store in session state
+# Just in case, since I kept running into trouble
+if 'resampled_data' not in st.session_state:
+    st.session_state.resampled_data = prepare_resampled_data()
+    
 # Create subsets for visualizations for each page
 hormone = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
  'PRG(ng/mL)', 'Pregnant(Y/N)']]
@@ -169,29 +174,17 @@ fertility = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(days)',
 'Follicle No. (L)', 'Follicle No. (R)', 'Avg. F size (L) (mm)', 
                     'Avg. F size (R) (mm)', 'Endometrium (mm)', 'Pregnant(Y/N)', ]]
 
-# Variables that are correlated with PCOS
-
-#temp
-model_data = resampled_data[['Age (yrs)','AMH(ng/mL)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 
-                   'Pimples(Y/N)', 'BMI', 'Follicle No. (L)', 'Follicle No. (R)','Cycle length(days)', 'PCOS (Y/N)']]
-
+### Variables that are correlated with PCOS
 true_numeric_cols = ['Age (yrs)', 'BMI', 'Cycle length(days)', 
                      'AMH(ng/mL)', 'Follicle No. (L)', 'Follicle No. (R)']
 
-### Add scaling code from ipynb file here!
-df_scaled = resampled_data[true_numeric_cols] # this is not scaled for right now, but will be when regression model is produced
+# Scaling
+data_scaled = resampled_data[true_numeric_cols].apply(zscore)
 non_scaled_cols = ['hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
                    'Pimples(Y/N)','Weight gain(Y/N)', 'PCOS (Y/N)']
-df_final = pd.concat([df_scaled, merged_df[non_scaled_cols]], axis=1)
-features = ['Age (yrs)','AMH(ng/mL)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 
-                   'Pimples(Y/N)', 'BMI', 'Follicle No. (L)', 'Follicle No. (R)','Cycle length(days)', 'PCOS (Y/N)']
-
-
-
-# Call the prepare_resampled_data function to prepare data and store in session state
-# Just in case, since I kept running into trouble
-if 'resampled_data' not in st.session_state:
-    st.session_state.resampled_data = prepare_resampled_data()
+final_model_data = pd.concat([data_scaled, resampled_data[non_scaled_cols]], axis=1)
+features = ['Age (yrs)', 'BMI', 'Cycle length(days)', 'AMH(ng/mL)', 'Follicle No. (L)', 'Follicle No. (R)', 
+                   'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 'Pimples(Y/N)','Weight gain(Y/N)', 'PCOS (Y/N)']
     
 
 # Sidebar navigation
@@ -465,11 +458,7 @@ if page == 'Principal Component Analysis':
     if len(selected_features) < 2:
         st.error("Please select at least two features for PCA.")
     else:
-        # Standardize the features
-        scaler = StandardScaler()
-        scaled_data = scaler.fit_transform(model_data[selected_features])
-
-        # Perform PCA
+        scaled_data = final_model_data[selected_features].values
         pca = PCA()
         components = pca.fit_transform(scaled_data)
 
@@ -482,7 +471,7 @@ if page == 'Principal Component Analysis':
             components,
             labels=labels,
             dimensions=range(min(12, len(explained_variance))),  # Show up to 12 PCs
-            color=model_data[color_by],
+            color=final_model_data[color_by],
         )
         fig.update_traces(diagonal_visible=False)
 
