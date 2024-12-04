@@ -373,7 +373,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
 
 if page == 'IDA/EDA: Hormone':
     st.title("Hormone Analysis")
-    st.subheader("Hormone Data")
+    # st.subheader("Hormone Data")
     st.write(hormone)  # Display hormone data
     numeric_columns = ['Age (yrs)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 
                            'PRL(ng/mL)', 'PRG(ng/mL)']
