@@ -476,6 +476,8 @@ if page == 'Principal Component Analysis':
             str(i): f"{selected_features[i]} ({explained_variance[i]:.1f}%)"
             for i in range(len(selected_features))
         }
+        final_model_data[color_by] = final_model_data[color_by].astype(str)
+
         # Create scatter matrix plot
         fig = px.scatter_matrix(
             components,
@@ -486,9 +488,14 @@ if page == 'Principal Component Analysis':
         )
         fig.update_traces(diagonal_visible=True)
         fig.update_layout(
-            xaxis_tickangle=0,  # X-axis labels horizontal
-            yaxis_tickangle=1,  # Y-axis labels horizontal
-            autosize=True
+            **{
+                f"xaxis{i+1}_tickangle": 0
+                for i in range(len(selected_features))
+            },
+            **{
+                f"yaxis{i+1}_tickangle": 0
+                for i in range(len(selected_features))
+            }
         )
 
         # Display the plot in Streamlit
