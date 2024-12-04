@@ -471,15 +471,15 @@ if page == 'Principal Component Analysis':
         components = pca.fit_transform(scaled_data)
 
         # Create a label mapping for components based on feature names
-        labels = {str(i): selected_features[i] for i in range(len(selected_features))}
-
+        labels = {str(i): f"PC {i+1} ({var:.1f}%)" for i, var in enumerate(explained_variance)}
+        
         # Create scatter matrix plot with a custom pink-red color scale
         fig = px.scatter_matrix(
             components,
             labels=labels,
             dimensions=range(len(selected_features)),  # Include all selected features
             color=final_model_data[color_by],
-            color_continuous_scale=["pink", "red"]
+            color_discrete_map={'1': 'red', '0': 'pink'} 
         )
         fig.update_traces(diagonal_visible=False)
 
