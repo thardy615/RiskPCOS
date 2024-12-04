@@ -9,6 +9,8 @@ import plotly.express as px
 import plotly.figure_factory as ff
 import plotly.graph_objects as go
 import io
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 ### Creating functions ###
 
