@@ -170,9 +170,9 @@ fertility = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(days)',
                     'Avg. F size (R) (mm)', 'Endometrium (mm)', 'Pregnant(Y/N)', ]]
 # Variables that correlated with PCOS
 model_data = resample_data[['Age (yrs)','AMH(ng/mL)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 
-                   'Pimples(Y/N)', 'BMI', 'Follicle No. (L)', 'Follicle No. (R)','Cycle length(days)', , 'PCOS (Y/N)']]
+                   'Pimples(Y/N)', 'BMI', 'Follicle No. (L)', 'Follicle No. (R)','Cycle length(days)', 'PCOS (Y/N)']]
 features = ['Age (yrs)','AMH(ng/mL)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 
-                   'Pimples(Y/N)', 'BMI', 'Follicle No. (L)', 'Follicle No. (R)','Cycle length(days)', , 'PCOS (Y/N)']
+                   'Pimples(Y/N)', 'BMI', 'Follicle No. (L)', 'Follicle No. (R)','Cycle length(days)', 'PCOS (Y/N)']
 
 
 
