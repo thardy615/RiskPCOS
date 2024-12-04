@@ -440,20 +440,26 @@ if page == 'IDA/EDA: Fertility':
 
 # Correlation Analysis revealed the following variables correlate with PCOS:
 # Age, AMH, Pregnant (Y/N), Weight Gain(Y/N), Hair Growth (Y/N), Skin Darkening (Y/N), Pimples (Y/N), BMI, Cycle length(days), Follicle No. (L), Follicle No. (R)
-# These variables with be used in further analysis 
+# These variables will be used in further analysis.
+
 if page == 'Principal Component Analysis':
     st.title("Principal Component Analysis (PCA)")
+
     # Display a brief introduction or description
     st.subheader("Explore dimensionality reduction using PCA.")
     st.write("""
         Principal Component Analysis (PCA) helps in reducing the dimensionality of data 
         while retaining most of the variance. Below, you can interact with the PCA plot 
-        and visualize the relationships between the principal components.
+        and visualize the relationships between the variables in the transformed space.
     """)
 
     # Sidebar for interactivity
     st.sidebar.header("PCA Configuration")
-    selected_features = st.sidebar.multiselect("Select features for PCA", features, default=features[:-1])
+    selected_features = st.sidebar.multiselect(
+        "Select features for PCA",
+        features, 
+        default=features[:-1]  # Removes the last feature ('PCOS (Y/N)') from the default selection
+    )
     color_by = st.sidebar.selectbox("Color by:", ['PCOS (Y/N)'])
 
     # Ensure features are selected
@@ -464,16 +470,16 @@ if page == 'Principal Component Analysis':
         pca = PCA()
         components = pca.fit_transform(scaled_data)
 
-        # Explained variance ratio
-        explained_variance = pca.explained_variance_ratio_ * 100
-        labels = {str(i): f"PC {i+1} ({var:.1f}%)" for i, var in enumerate(explained_variance)}
+        # Create a label mapping for components based on feature names
+        labels = {str(i): selected_features[i] for i in range(len(selected_features))}
 
-        # Create scatter matrix plot
+        # Create scatter matrix plot with a custom pink-red color scale
         fig = px.scatter_matrix(
             components,
             labels=labels,
-            dimensions=range(min(12, len(explained_variance))),  # Show up to 12 PCs
+            dimensions=range(len(selected_features)),  # Include all selected features
             color=final_model_data[color_by],
+            color_continuous_scale=["pink", "red"]
         )
         fig.update_traces(diagonal_visible=False)
 
@@ -482,8 +488,9 @@ if page == 'Principal Component Analysis':
 
         # Optionally, show explained variance
         st.sidebar.write("Explained Variance Ratios:")
-        for i, var in enumerate(explained_variance[:12]):  # Show up to 12 PCs
-            st.sidebar.write(f"PC {i+1}: {var:.2f}%")
+        for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)]):
+            st.sidebar.write(f"{selected_features[i]}: {var:.2f}%")
+
 
 if page == 'Cluster Analysis':
     st.title("Cluster Analysis")
