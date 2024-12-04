@@ -470,18 +470,20 @@ if page == 'Principal Component Analysis':
         pca = PCA()
         components = pca.fit_transform(scaled_data)
 
-        # Create a label mapping for components based on feature names
+        # Explained variance ratio
+        explained_variance = pca.explained_variance_ratio_ * 100
         labels = {str(i): f"PC {i+1} ({var:.1f}%)" for i, var in enumerate(explained_variance)}
-        
-        # Create scatter matrix plot with a custom pink-red color scale
+
+        # Create scatter matrix plot
         fig = px.scatter_matrix(
             components,
             labels=labels,
-            dimensions=range(len(selected_features)),  # Include all selected features
+            dimensions=range(min(12, len(explained_variance))),  # Show up to 12 PCs
             color=final_model_data[color_by],
             color_discrete_map={'1': 'red', '0': 'pink'} 
         )
-        fig.update_traces(diagonal_visible=False)
+        fig.update_traces(diagonal_visible=True)
+        fig.update_layout(yaxis_tickangle=0)
 
         # Display the plot in Streamlit
         st.plotly_chart(fig)
