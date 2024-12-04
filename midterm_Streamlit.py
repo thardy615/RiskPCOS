@@ -168,9 +168,21 @@ metabolic = resampled_data[['Age (yrs)','PCOS (Y/N)', 'BMI', 'Waist:Hip Ratio', 
 fertility = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(days)', 
 'Follicle No. (L)', 'Follicle No. (R)', 'Avg. F size (L) (mm)', 
                     'Avg. F size (R) (mm)', 'Endometrium (mm)', 'Pregnant(Y/N)', ]]
-# Variables that correlated with PCOS
-model_data = resample_data[['Age (yrs)','AMH(ng/mL)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 
+
+# Variables that are correlated with PCOS
+
+#temp
+model_data = resampled_data[['Age (yrs)','AMH(ng/mL)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 
                    'Pimples(Y/N)', 'BMI', 'Follicle No. (L)', 'Follicle No. (R)','Cycle length(days)', 'PCOS (Y/N)']]
+
+true_numeric_cols = ['Age (yrs)', 'BMI', 'Cycle length(days)', 
+                     'AMH(ng/mL)', 'Follicle No. (L)', 'Follicle No. (R)']
+
+### Add scaling code from ipynb file here!
+df_scaled = resampled_data[true_numeric_cols] # this is not scaled for right now, but will be when regression model is produced
+non_scaled_cols = ['hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
+                   'Pimples(Y/N)','Weight gain(Y/N)', 'PCOS (Y/N)']
+df_final = pd.concat([df_scaled, merged_df[non_scaled_cols]], axis=1)
 features = ['Age (yrs)','AMH(ng/mL)', 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 
                    'Pimples(Y/N)', 'BMI', 'Follicle No. (L)', 'Follicle No. (R)','Cycle length(days)', 'PCOS (Y/N)']
 
