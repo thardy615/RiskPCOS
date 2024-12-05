@@ -192,7 +192,7 @@ features = ['Age (yrs)', 'BMI', 'Cycle length(days)', 'AMH(ng/mL)', 'Follicle No
 # Sidebar navigation
 st.sidebar.image(r"PCOS (1).png", use_column_width=True)
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: Quality of Life', 'IDA/EDA: Metabolic', 'IDA/EDA: Fertility',"Principal Component Analysis", "Normal Lab Work Results", "Nomogram Risk Assessment"], index=0)
+page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: Quality of Life', 'IDA/EDA: Metabolic', 'IDA/EDA: Fertility',"Principal Component Analysis", "Models", "Normal Lab Work Results", "Nomogram Risk Assessment"], index=0)
 
 
 # Home Page (default)
@@ -544,7 +544,10 @@ if page == 'Principal Component Analysis':
     else:
         st.warning("Not enough components available for a 3D PCA plot. Select more features.")
 
-
+if page == 'Models':
+    st.title("Models")
+    st.subheader("Coming Soon!")
+    
 if page == 'Nomogram Risk Assessment':
     st.title("Nomogram Risk Assessment")
     st.subheader("Coming Soon!")
