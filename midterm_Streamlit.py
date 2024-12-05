@@ -172,12 +172,27 @@ def plot_confusion_matrix(model_name, y_true, y_pred):
     st.pyplot(fig)
     
 # Define a function to calculate the "log-odds" based on the model's decision function
-def calculate_risk(features, model):
-    # Use the model's decision function (output is log-odds or decision value)
-    decision_value = model.decision_function(features)
-    # Convert log-odds to probability using the sigmoid function
-    risk = 1 / (1 + np.exp(-decision_value))
-    return risk[0][0]
+def calculate_risk(features_unscaled, model, scaler, numeric_features):
+    # Separate numeric and binary features
+    numeric_inputs_unscaled = [features_unscaled[feature] for feature in numeric_features]
+    binary_inputs = [features_unscaled[feature] for feature in features_unscaled if feature not in numeric_features]
+    
+    # Scale numeric inputs
+    numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]
+    
+    # Combine scaled numeric inputs with binary inputs
+    model_inputs = []
+    for feature in features_unscaled:
+        if feature in numeric_features:
+            model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
+        else:
+            model_inputs.append(features_unscaled[feature])
+    
+    # Calculate log-odds using the model's decision function
+    decision_value = model.decision_function([model_inputs])  # Log-odds
+    risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
+    return risk[0]
+
 ######################################################
 
 resampled_data = prepare_resampled_data() # Use function above to get SMOTE dataframe
@@ -651,7 +666,7 @@ if page == 'Nomogram Risk Assessment':
     st.write("""This nomogram allows you to adjust the values of different features, 
     and based on the selected `best_svm_model`, the risk of having PCOS will be calculated.""")
     scaler = StandardScaler()
-
+    
     # Identify numeric and binary features
     numeric_features = [feature for feature in features if len(final_model_data[feature].unique()) > 2]
     binary_features = [feature for feature in features if feature not in numeric_features]
@@ -670,25 +685,30 @@ if page == 'Nomogram Risk Assessment':
         min_val = resampled_data[feature].min()
         max_val = resampled_data[feature].max()
         mean_val = resampled_data[feature].mean()
+        if idx == 1:  # The second numeric feature allows decimals
+            step_val = 0.01
+        else:
+            step_val = 1  # All other numeric features are integers
+    
         feature_inputs_unscaled[feature] = st.slider(
-            f"Adjust {feature}", min_value=float(min_val), max_value=float(max_val), value=float(mean_val))
+            f"Adjust {feature}", min_value=float(min_val), max_value=float(max_val), value=float(mean_val), step = step_val)
 
     # Dropdowns for binary features
     for feature in binary_features:
         feature_inputs_unscaled[feature] = st.selectbox(
             f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
 
-    # Scale numeric inputs dynamically
-    numeric_inputs_unscaled = [feature_inputs_unscaled[feature] for feature in numeric_features]
-    numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]  # Scale for model
+    # # Scale numeric inputs dynamically
+    # numeric_inputs_unscaled = [feature_inputs_unscaled[feature] for feature in numeric_features]
+    # numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]  # Scale for model
 
-    # Combine scaled numeric features and raw binary features
-    model_inputs = []
-    for feature in features:
-        if feature in numeric_features:
-            model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
-        else:
-            model_inputs.append(feature_inputs_unscaled[feature])
+    # # Combine scaled numeric features and raw binary features
+    # model_inputs = []
+    # for feature in features:
+    #     if feature in numeric_features:
+    #         model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
+    #     else:
+    #         model_inputs.append(feature_inputs_unscaled[feature])
 
     # # Prepare feature list for prediction
     # input_features = [
@@ -706,8 +726,9 @@ if page == 'Nomogram Risk Assessment':
 
     # Calculate the risk based on the model
     # risk = calculate_risk(input_features, best_svm_model)
-    decision_value = best_svm_model.decision_function([model_inputs])  # Log-odds
-    risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
+    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, numeric_features)
+    # decision_value = best_svm_model.decision_function([model_inputs])  # Log-odds
+    # risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
 
     # Display the calculated risk as a percentage
     st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
