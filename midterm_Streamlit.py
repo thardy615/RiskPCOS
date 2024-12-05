@@ -601,6 +601,19 @@ if page == 'Principal Component Analysis':
 if page == 'Models':
     st.markdown("""<h1 style='color: pink;'><strong>Machine Learning Models That Can Predict PCOS Risk </h1>""", unsafe_allow_html=True)
     st.subheader("Exploring Different Models for Classification")
+    st.write("""
+### Model Selection Summary:
+The table below includes the variables utilized in PCA, which showed strong correlations with PCOS. I have explored and trained the following models:
+
+- **Linear Regression**
+- **Logistic Regression**
+- **LASSO Regression**
+- **Support Vector Machines (SVM)**:
+  - Kernels: 'linear', 'rbf', 'poly', 'sigmoid'
+- **Naive Bayes**
+
+The model with the **best accuracy** is the **SVM model** using the **rbf (Radial Basis Function)** kernel.
+""")
     st.write(final_model_data)  # Display dataset for reference
 
     # Split the data into training and test data
@@ -648,7 +661,7 @@ if page == 'Models':
         best_svm_model.fit(X_train, y_train)
         st.write("Model has been trained and stored in session state.")
     else:
-        st.write("Model already exists in session state.")
+        print("Model already exists in session state.")
     best_svm_model.fit(X_train, y_train)
     
     ## Naive Bayes
