@@ -173,11 +173,8 @@ def plot_confusion_matrix(model_name, y_true, y_pred):
     
 # Define a function to calculate the "log-odds" based on the model's decision function
 def calculate_risk(features, model):
-    # Scale the features using the model's scaler (assuming scaling was used before)
-    scaler = StandardScaler()
-    scaled_features = scaler.fit_transform([features])
     # Use the model's decision function (output is log-odds or decision value)
-    decision_value = model.decision_function(scaled_features)
+    decision_value = model.decision_function(features)
     # Convert log-odds to probability using the sigmoid function
     risk = 1 / (1 + np.exp(-decision_value))
     return risk[0][0]
