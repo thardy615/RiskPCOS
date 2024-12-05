@@ -231,7 +231,7 @@ features = ['Age (yrs)', 'BMI', 'Cycle length(days)', 'AMH(ng/mL)', 'Follicle No
 # Sidebar navigation
 st.sidebar.image(r"PCOS (1).png", use_column_width=True)
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: Quality of Life', 'IDA/EDA: Metabolic', 'IDA/EDA: Fertility',"Principal Component Analysis", "Models", "Normal Lab Work Results", "Nomogram Risk Assessment"], index=0)
+page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: Quality of Life', 'IDA/EDA: Metabolic', 'IDA/EDA: Fertility',"Principal Component Analysis", "Models", "Nomogram Risk Assessment"], index=0)
 
 
 # Home Page (default)
@@ -420,6 +420,10 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
 
 if page == 'IDA/EDA: Hormone':
     st.markdown("""<h1 style='color: pink;'><strong>Hormone Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
+    # Footer about data
+    st.markdown("""
+<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my models accessed for the nomogram.   
+</p>""", unsafe_allow_html=True)
     st.write(hormone)  # Display hormone data
     numeric_columns = ['Age (yrs)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 
                            'PRL(ng/mL)', 'PRG(ng/mL)']
@@ -433,6 +437,10 @@ if page == 'IDA/EDA: Hormone':
 
 if page == 'IDA/EDA: Quality of Life':
     st.markdown("""<h1 style='color: pink;'><strong>'Quality of Life' Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
+    # Footer about data
+    st.markdown("""
+<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my models accessed for the nomogram.   
+</p>""", unsafe_allow_html=True)
     st.subheader("Quality of Life Data")
     st.write(qualityOfLife)  # Display quality of life data
     numeric_columns = []
@@ -448,6 +456,10 @@ if page == 'IDA/EDA: Quality of Life':
 
 if page == 'IDA/EDA: Metabolic':
     st.markdown("""<h1 style='color: pink;'><strong>Metabolic Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
+    # Footer about data
+    st.markdown("""
+<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my models accessed for the nomogram.   
+</p>""", unsafe_allow_html=True)
     st.subheader("Metabolic Data")
     st.write(metabolic)  # Display metabolic data
     numeric_columns = ['BMI', 'Waist:Hip Ratio', 'RBS(mg/dl)', 
@@ -464,6 +476,10 @@ if page == 'IDA/EDA: Metabolic':
 
 if page == 'IDA/EDA: Fertility':
     st.markdown("""<h1 style='color: pink;'><strong>Fertility Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
+    # Footer about data
+    st.markdown("""
+<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my models accessed for the nomogram.   
+</p>""", unsafe_allow_html=True)
     st.subheader("Fertility Data")
     st.write(fertility)  # Display fertility data
     numeric_columns = ['Cycle length(days)', 'Follicle No. (L)', 
@@ -717,7 +733,3 @@ if page == 'Nomogram Risk Assessment':
     # Display the calculated risk as a percentage
     st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
 
-    
-if page == "Normal Lab Work Results":
-    st.title("Normal Lab Work Results")
-    st.subheader("Coming Soon!")
