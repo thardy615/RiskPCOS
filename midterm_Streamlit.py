@@ -612,9 +612,9 @@ if page == 'Models':
     results['Naive Bayes'] = accuracy_score(y_test, y_pred_nb)
 
     # Display results
-    st.subheader("Model Comparison")
+    st.subheader("Model Comparisons:")
     for model, acc in results.items():
-        st.write(f"{model}: {acc:.2f}")
+        st.subheader(f"{model} Accuracy: {acc:.2f}")
         # Generate predictions for the corresponding model
         if model == "Linear Regression":
             y_pred = lin_reg.predict(X_test).round()
