@@ -703,8 +703,13 @@ if page == 'Nomogram Risk Assessment':
         max_val = float(resampled_data[feature].max())
         mean_val = float(resampled_data[feature].mean())
 
-        # Define step_val based on the index (idx) of the numeric feature
-        step_val = 0.01 if idx == 1 else 1  # Second numeric feature allows decimals, rest are integers
+        if feature == "BMI":  # Replace "BMI" with the actual name of your BMI feature
+            min_val = round(min_val, 2)
+            max_val = round(max_val, 2)
+            mean_val = round(mean_val, 2)
+            step_val = 0.01  # Allow decimal precision for BMI
+        else:
+            step_val = 1  # Integer values for other features
     
         # Display debug information to track feature details
         st.write(f"Feature: {feature}, Min: {min_val}, Max: {max_val}, Mean: {mean_val}, Step: {step_val}")
