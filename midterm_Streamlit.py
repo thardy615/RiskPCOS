@@ -629,7 +629,7 @@ if page == 'Models':
             y_pred = nb_model.predict(X_test)
 
         # Plot the confusion matrix
-        fig, ax = plt.subplots(figsize=(5, 5))
+        fig, ax = plt.subplots(figsize=(3, 3))
         ConfusionMatrixDisplay.from_predictions(
             y_test, y_pred, ax=ax, cmap="Blues", colorbar=False
         )
