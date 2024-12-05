@@ -649,7 +649,7 @@ if page == 'Models':
         st.write("Model has been trained and stored in session state.")
     else:
         st.write("Model already exists in session state.")
-    # best_svm_model.fit(X_train, y_train)
+    best_svm_model.fit(X_train, y_train)
     
     ## Naive Bayes
     nb_model = GaussianNB()
