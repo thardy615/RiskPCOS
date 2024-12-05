@@ -487,15 +487,13 @@ if page == 'Principal Component Analysis':
             color_discrete_map={'1': 'red', '0': 'pink'} 
         )
         fig.update_traces(diagonal_visible=True)
+        # Adjust axis labels to be horizontal
         fig.update_layout(
-            **{
-                f"xaxis{i+1}_tickangle": 0
-                for i in range(len(selected_features))
-            },
-            **{
-                f"yaxis{i+1}_tickangle": 0
-                for i in range(len(selected_features))
-            }
+            xaxis_tickangle=0,  # X-axis labels horizontal
+            yaxis_tickangle=0,  # Y-axis labels horizontal
+            xaxis=dict(tickfont=dict(size=10)),
+            yaxis=dict(tickfont=dict(size=10)),
+            autosize=True
         )
 
         # Display the plot in Streamlit
