@@ -170,7 +170,17 @@ def plot_confusion_matrix(model_name, y_true, y_pred):
     )
     ax.set_title(f"Confusion Matrix: {model_name}")
     st.pyplot(fig)
-
+    
+# Define a function to calculate the "log-odds" based on the model's decision function
+def calculate_risk(features, model):
+    # Scale the features using the model's scaler (assuming scaling was used before)
+    scaler = StandardScaler()
+    scaled_features = scaler.fit_transform([features])
+    # Use the model's decision function (output is log-odds or decision value)
+    decision_value = model.decision_function(scaled_features)
+    # Convert log-odds to probability using the sigmoid function
+    risk = 1 / (1 + np.exp(-decision_value))
+    return risk[0][0]
 ######################################################
 
 resampled_data = prepare_resampled_data() # Use function above to get SMOTE dataframe
@@ -637,8 +647,43 @@ if page == 'Models':
         st.pyplot(fig)
     
 if page == 'Nomogram Risk Assessment':
-    st.title("Nomogram Risk Assessment")
-    st.subheader("Coming Soon!")
+    st.title("Interactive Nomogram for PCOS Risk Prediction")
+
+    # Description of the tool
+    st.subheader("Adjust the following features to predict the risk of PCOS")
+    st.write("""This nomogram allows you to adjust the values of different features, 
+    and based on the selected `best_svm_model`, the risk of having PCOS will be calculated.""")
+
+    # Collect user input for each feature
+    feature_inputs = {}
+    for feature in features:
+        feature_inputs[feature] = st.slider(f"Adjust {feature}", min_value=final_model_data[feature].min(), 
+                                            max_value=final_model_data[feature].max(), 
+                                            value=float(final_model_data[feature].mean()))
+
+    # Prepare feature list for prediction
+    input_features = [
+        feature_inputs['Age (yrs)'],
+        feature_inputs['BMI'],
+        feature_inputs['Cycle length(days)'],
+        feature_inputs['AMH(ng/mL)'],
+        feature_inputs['Follicle No. (L)'],
+        feature_inputs['Follicle No. (R)'],
+        feature_inputs['hair growth(Y/N)'],
+        feature_inputs['Skin darkening (Y/N)'],
+        feature_inputs['Hair loss(Y/N)'],
+        feature_inputs['Pimples(Y/N)'],
+        feature_inputs['Weight gain(Y/N)']]
+
+# Calculate the risk based on the model
+risk = calculate_risk(input_features, best_svm_model)
+
+# Display the calculated risk as a percentage
+st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
+
+# Optional: You could create a plot here showing how the risk changes with different variables if needed
+# (e.g., using a bar chart for each variable's influence)
+
     
 if page == "Normal Lab Work Results":
     st.title("Normal Lab Work Results")
