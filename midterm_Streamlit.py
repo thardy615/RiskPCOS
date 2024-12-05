@@ -492,7 +492,7 @@ if page == 'Principal Component Analysis':
 
         # Display the plot in Streamlit
         st.plotly_chart(fig)
-        st.write(fig.layout.keys())
+        print(fig.layout)
 
         # Optionally, show explained variance
         st.sidebar.write("Explained Variance Ratios:")
