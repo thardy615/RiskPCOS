@@ -192,7 +192,7 @@ features = ['Age (yrs)', 'BMI', 'Cycle length(days)', 'AMH(ng/mL)', 'Follicle No
 # Sidebar navigation
 st.sidebar.image(r"PCOS (1).png", use_column_width=True)
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: Quality of Life', 'IDA/EDA: Metabolic', 'IDA/EDA: Fertility',"Principal Component Analysis", "Cluster Analysis", "Normal Lab Work Results", "Nomogram Risk Assessment"], index=0)
+page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: Quality of Life', 'IDA/EDA: Metabolic', 'IDA/EDA: Fertility',"Principal Component Analysis", "Normal Lab Work Results", "Nomogram Risk Assessment"], index=0)
 
 
 # Home Page (default)
@@ -494,12 +494,54 @@ if page == 'Principal Component Analysis':
         st.sidebar.write("Explained Variance Percentages:")
         for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)]):
             st.sidebar.write(f"{selected_features[i]}/PC{i + 1}: {var:.2f}%")
-           # st.sidebar.write(f"{selected_features[i]}/PC{i}: {var:.2f}%")
+    # Add a 3D PCA visualization
+    st.subheader("Interactive 3D PCA Plot")
+    st.write("""Visualize the data in a 3D principal component space to explore clustering or patterns 
+    associated with PCOS classification.""")
 
+    # Ensure at least 3 components are available for 3D plotting
+    if components.shape[1] >= 3:
+        # Create a DataFrame for plotting
+        pca_df = pd.DataFrame(
+            {
+                'PC1': components[:, 0],
+                'PC2': components[:, 1],
+                'PC3': components[:, 2],
+                'PCOS (Y/N)': final_model_data[color_by]
+        }
+    )
+    
+        # Create the 3D scatter plot
+        fig_3d = px.scatter_3d(
+            pca_df,
+            x='PC1',
+            y='PC2',
+            z='PC3',
+            color='PCOS (Y/N)',
+            color_discrete_map={'1': 'red', '0': 'pink'},
+            title="3D PCA Plot",
+            labels={
+                'PC1': f"PC1 ({explained_variance[0]:.1f}%)",
+                'PC2': f"PC2 ({explained_variance[1]:.1f}%)",
+                'PC3': f"PC3 ({explained_variance[2]:.1f}%)"
+            },
+            template="plotly_white"
+        )
+    
+        # Customize plot appearance
+        fig_3d.update_layout(
+            scene=dict(
+                xaxis=dict(title=f"PC1 ({explained_variance[0]:.1f}%)"),
+                yaxis=dict(title=f"PC2 ({explained_variance[1]:.1f}%)"),
+                zaxis=dict(title=f"PC3 ({explained_variance[2]:.1f}%)")
+            )
+        )
 
-if page == 'Cluster Analysis':
-    st.title("Cluster Analysis")
-    st.subheader("Coming Soon!")
+        # Display the 3D PCA plot in Streamlit
+        st.plotly_chart(fig_3d)
+    else:
+        st.warning("Not enough components available for a 3D PCA plot. Select more features.")
+
 
 if page == 'Nomogram Risk Assessment':
     st.title("Nomogram Risk Assessment")
