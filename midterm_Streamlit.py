@@ -667,6 +667,29 @@ if page == 'Nomogram Risk Assessment':
     and based on the selected `best_svm_model`, the risk of having PCOS will be calculated.""")
     
     # Identify numeric and binary features
+    # numeric_features = [feature for feature in features if len(final_model_data[feature].unique()) > 2]
+    # binary_features = [feature for feature in features if feature not in numeric_features]
+    # scaler = StandardScaler()
+    # scaler.fit(resampled_data[numeric_features])
+
+    # feature_inputs_unscaled = {}
+
+    # # Sliders for numeric features (display unscaled values)
+    # for idx, feature in enumerate(numeric_features):
+    #     st.write(f"Feature: {feature}")  # Debugging line
+    #     st.write(f"Data for {feature}: {resampled_data[feature].head()}")  # Debugging line
+    
+    #     min_val = float(resampled_data[feature].min())
+    #     max_val = float(resampled_data[feature].max())
+    #     mean_val = float(resampled_data[feature].mean())
+    #     step_val = 0.01 if idx == 1 else 1  # Second feature allows decimals
+    #     # Debug the slider values to ensure they are correct
+    #     st.write(f"Min: {min_val}, Max: {max_val}, Mean: {mean_val}, Step: {0.01 if idx == 1 else 1}")  # Debugging line
+    
+    #     feature_inputs_unscaled[feature] = st.slider(
+    #         f"Adjust{feature}", min_value=min_val, max_value=max_val, value=mean_val, step = step_val)
+
+    # Identify numeric and binary features
     numeric_features = [feature for feature in features if len(final_model_data[feature].unique()) > 2]
     binary_features = [feature for feature in features if feature not in numeric_features]
     scaler = StandardScaler()
@@ -676,18 +699,20 @@ if page == 'Nomogram Risk Assessment':
 
     # Sliders for numeric features (display unscaled values)
     for idx, feature in enumerate(numeric_features):
-        st.write(f"Feature: {feature}")  # Debugging line
-        st.write(f"Data for {feature}: {resampled_data[feature].head()}")  # Debugging line
-    
         min_val = float(resampled_data[feature].min())
         max_val = float(resampled_data[feature].max())
         mean_val = float(resampled_data[feature].mean())
-        step_val = 0.01 if idx == 1 else 1  # Second feature allows decimals
-        # Debug the slider values to ensure they are correct
-        st.write(f"Min: {min_val}, Max: {max_val}, Mean: {mean_val}, Step: {0.01 if idx == 1 else 1}")  # Debugging line
+
+        # Define step_val based on the index (idx) of the numeric feature
+        step_val = 0.01 if idx == 1 else 1  # Second numeric feature allows decimals, rest are integers
     
+        # Display debug information to track feature details
+        st.write(f"Feature: {feature}, Min: {min_val}, Max: {max_val}, Mean: {mean_val}, Step: {step_val}")
+
+        # Add the slider input for the user
         feature_inputs_unscaled[feature] = st.slider(
-            f"Adjust{feature}", min_value=min_val, max_value=max_val, value=mean_val, step = step_val)
+            f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val, step=step_val
+        )
 
     # Dropdowns for binary features
     for feature in binary_features:
