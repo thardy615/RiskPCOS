@@ -534,7 +534,7 @@ if page == 'Principal Component Analysis':
                 xaxis=dict(title=f"PC1 ({explained_variance[0]:.1f}%)"),
                 yaxis=dict(title=f"PC2 ({explained_variance[1]:.1f}%)"),
                 zaxis=dict(title=f"PC3 ({explained_variance[2]:.1f}%)")
-            )
+            ),
             width=1000,
             height=800
         )
