@@ -422,7 +422,7 @@ if page == 'IDA/EDA: Hormone':
     st.markdown("""<h1 style='color: pink;'><strong>Hormone Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
     # Footer about data
     st.markdown("""
-<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my models accessed for the nomogram.   
+<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my PCA analysis and my models accessed for the nomogram.  
 </p>""", unsafe_allow_html=True)
     st.write(hormone)  # Display hormone data
     numeric_columns = ['Age (yrs)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 
@@ -439,7 +439,7 @@ if page == 'IDA/EDA: Quality of Life':
     st.markdown("""<h1 style='color: pink;'><strong>'Quality of Life' Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
     # Footer about data
     st.markdown("""
-<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my models accessed for the nomogram.   
+<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my PCA analysis and my models accessed for the nomogram.   
 </p>""", unsafe_allow_html=True)
     st.subheader("Quality of Life Data")
     st.write(qualityOfLife)  # Display quality of life data
@@ -458,7 +458,7 @@ if page == 'IDA/EDA: Metabolic':
     st.markdown("""<h1 style='color: pink;'><strong>Metabolic Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
     # Footer about data
     st.markdown("""
-<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my models accessed for the nomogram.   
+<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my PCA analysis and my models accessed for the nomogram.   
 </p>""", unsafe_allow_html=True)
     st.subheader("Metabolic Data")
     st.write(metabolic)  # Display metabolic data
@@ -478,7 +478,7 @@ if page == 'IDA/EDA: Fertility':
     st.markdown("""<h1 style='color: pink;'><strong>Fertility Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
     # Footer about data
     st.markdown("""
-<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my models accessed for the nomogram.   
+<p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my PCA analysis and my models accessed for the nomogram.   
 </p>""", unsafe_allow_html=True)
     st.subheader("Fertility Data")
     st.write(fertility)  # Display fertility data
