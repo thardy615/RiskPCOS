@@ -492,7 +492,7 @@ if page == 'Principal Component Analysis':
         # Adjust axis labels and tick font sizes
         for axis in fig.layout:
             if axis.startswith("xaxis") or axis.startswith("yaxis"):
-                fig.layout[axis].update(tickangle=0, tickfont=dict(size=8)
+                fig.layout[axis].update(tickangle=0, tickfont=dict(size=8))
 
         # Display the plot in Streamlit
         st.plotly_chart(fig)
