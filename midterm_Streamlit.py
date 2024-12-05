@@ -504,7 +504,7 @@ if page == 'Principal Component Analysis':
     st.write("""
         Principal Component Analysis (PCA) helps in reducing the dimensionality of data 
         while retaining most of the variance. Below, you can interact with the PCA plot 
-        and visualize the relationships between the variables in the transformed space Additionally, the sidebar allows users to include all 11 variables or exclude up to 9 of your choosing. Keep in mind, if only 2 PCs are chosen, the 3D plot with not execute.
+        and visualize the relationships between the variables in the transformed space Additionally, the sidebar allows users to include all 11 variables or exclude up to 9 of your choosing. Keep in mind, if only 2 PCs are chosen, the 3D plot with not execute. Also, variance percentages for each PC are shown in the sidebar.
     """)
     st.write(final_model_data)  # Display data being used in PCA (11 variables + target)
 
