@@ -682,12 +682,12 @@ if page == 'Nomogram Risk Assessment':
         step_val = 0.01 if idx == 1 else 1  # Second feature allows decimals
     
         feature_inputs_unscaled[feature] = st.slider(
-            f"{feature}", min_value=float(min_val), max_value=float(max_val), value=float(mean_val), step = step_val)
+            f"Adjust{feature}", min_value=float(min_val), max_value=float(max_val), value=float(mean_val), step = step_val)
 
     # Dropdowns for binary features
     for feature in binary_features:
         feature_inputs_unscaled[feature] = st.selectbox(
-            f"{feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
+            f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
 
     # # Scale numeric inputs dynamically
     # numeric_inputs_unscaled = [feature_inputs_unscaled[feature] for feature in numeric_features]
