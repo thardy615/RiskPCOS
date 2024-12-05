@@ -658,6 +658,7 @@ if page == 'Models':
         )
         ax.set_title(f"Confusion Matrix: {model}")
         st.pyplot(fig)
+    if 'best_svm_model' not in st.session_state:
         st.session_state.best_svm_model = best_svm_model
     
 if page == 'Nomogram Risk Assessment':
