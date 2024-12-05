@@ -535,6 +535,8 @@ if page == 'Principal Component Analysis':
                 yaxis=dict(title=f"PC2 ({explained_variance[1]:.1f}%)"),
                 zaxis=dict(title=f"PC3 ({explained_variance[2]:.1f}%)")
             )
+            width=1000,
+            height=800
         )
 
         # Display the 3D PCA plot in Streamlit
