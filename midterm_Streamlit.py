@@ -488,17 +488,11 @@ if page == 'Principal Component Analysis':
             color_discrete_map={'1': 'red', '0': 'pink'} 
         )
         fig.update_traces(diagonal_visible=True)
-
-        # Loop through subplot axes and apply custom styling
-        for i in range(len(selected_features)):
-            # Update x-axis labels for each subplot
-            fig.layout[f'xaxis{i + 1}'].update(tickangle=0, tickfont=dict(size=8))
-            # Update y-axis labels for each subplot
-            fig.layout[f'yaxis{i + 1}'].update(tickangle=0, tickfont=dict(size=8))
-
+        fig.update_layout(font=dict(size=8),xaxis=dict(tickangle=0), yaxis=dict(tickangle=0))
 
         # Display the plot in Streamlit
         st.plotly_chart(fig)
+        st.write(fig.layout.keys())
 
         # Optionally, show explained variance
         st.sidebar.write("Explained Variance Ratios:")
