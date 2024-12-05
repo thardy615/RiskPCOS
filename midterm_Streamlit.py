@@ -452,6 +452,7 @@ if page == 'Principal Component Analysis':
         while retaining most of the variance. Below, you can interact with the PCA plot 
         and visualize the relationships between the variables in the transformed space.
     """)
+    st.write(final_model_data)  # Display data being used in PCA (11 variables + target)
 
     # Sidebar for interactivity
     st.sidebar.header("PCA Configuration")
@@ -488,13 +489,10 @@ if page == 'Principal Component Analysis':
         )
         fig.update_traces(diagonal_visible=True)
         # Adjust axis labels to be horizontal
-        fig.update_layout(
-            xaxis_tickangle=0,  # X-axis labels horizontal
-            yaxis_tickangle=0,  # Y-axis labels horizontal
-            xaxis=dict(tickfont=dict(size=5)),
-            yaxis=dict(tickfont=dict(size=5)),
-            autosize=True
-        )
+        # Adjust axis labels and tick font sizes
+        for axis in fig.layout:
+            if axis.startswith("xaxis") or axis.startswith("yaxis"):
+                fig.layout[axis].update(tickangle=0, tickfont=dict(size=8)
 
         # Display the plot in Streamlit
         st.plotly_chart(fig)
