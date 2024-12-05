@@ -491,9 +491,9 @@ if page == 'Principal Component Analysis':
         st.plotly_chart(fig)
 
         # Show explained variance in sidebar
-        st.sidebar.write("Explained Variance Ratios:")
-        st.sidebar.write(f"{selected_features[i]}/PC{i + 1}: {var:.1f}%")
-        # for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)]):
+        st.sidebar.write("Explained Variance Percentages:")
+        for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)]):
+            st.sidebar.write(f"{selected_features[i]}/PC{i + 1}: {var:.1f}%")
            # st.sidebar.write(f"{selected_features[i]}/PC{i}: {var:.2f}%")
 
 
