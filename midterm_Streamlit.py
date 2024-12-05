@@ -564,15 +564,14 @@ if page == 'Models':
     st.subheader("Exploring Different Models for Classification")
     st.write(final_model_data)  # Display dataset for reference
 
-    # Split the data
+    # Split the data into training and test data
     target = 'PCOS (Y/N)'
     X = final_model_data.drop(columns=[target])  # Features
     y = final_model_data[target].astype(int)     # Target (binary)
-
     split_pct = 0.70
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1 - split_pct, random_state=42)
 
-    # Model definitions
+    # Models
     results = {}
 
     ## Linear Regression
@@ -605,9 +604,7 @@ if page == 'Models':
     best_svm_kernel = max(svm_accuracies, key=svm_accuracies.get)
     results['SVM (Best Kernel)'] = svm_accuracies[best_svm_kernel]
     
-
     ## Naive Bayes
-    st.subheader("Naive Bayes")
     nb_model = GaussianNB()
     nb_model.fit(X_train, y_train)
     y_pred_nb = nb_model.predict(X_test)
@@ -625,7 +622,7 @@ if page == 'Models':
         elif model_name == "LASSO Regression":
             y_pred = lasso.predict(X_test).round()
         elif model_name.startswith("SVM"):
-            y_pred = svm_model.predict(X_test) 
+            y_pred = best_svm_model.predict(X_test) 
             st.write(f"Best SVM Kernel: {best_svm_kernel}")
         elif model_name == "Naive Bayes":
             y_pred = nb_model.predict(X_test)
@@ -637,7 +634,6 @@ if page == 'Models':
         )
         ax.set_title(f"Confusion Matrix: {model_name}")
         st.pyplot(fig)
-
     
 if page == 'Nomogram Risk Assessment':
     st.title("Nomogram Risk Assessment")
