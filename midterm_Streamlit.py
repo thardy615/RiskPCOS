@@ -488,11 +488,14 @@ if page == 'Principal Component Analysis':
             color_discrete_map={'1': 'red', '0': 'pink'} 
         )
         fig.update_traces(diagonal_visible=True)
-        # Adjust axis labels to be horizontal
-        # Adjust axis labels and tick font sizes
-        for axis in fig.layout:
-            if axis.startswith("xaxis") or axis.startswith("yaxis"):
-                fig.layout[axis].update(tickangle=0, tickfont=dict(size=8))
+
+        # Loop through subplot axes and apply custom styling
+        for i in range(len(selected_features)):
+            # Update x-axis labels for each subplot
+            fig.layout[f'xaxis{i + 1}'].update(tickangle=0, tickfont=dict(size=8))
+            # Update y-axis labels for each subplot
+            fig.layout[f'yaxis{i + 1}'].update(tickangle=0, tickfont=dict(size=8))
+
 
         # Display the plot in Streamlit
         st.plotly_chart(fig)
