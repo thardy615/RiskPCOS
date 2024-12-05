@@ -395,8 +395,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
 
 if page == 'IDA/EDA: Hormone':
-    st.title("Hormone Analysis")
-    # st.subheader("Hormone Data")
+    st.markdown("""<h1 style='color: pink;'><strong>Hormone Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
     st.write(hormone)  # Display hormone data
     numeric_columns = ['Age (yrs)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 
                            'PRL(ng/mL)', 'PRG(ng/mL)']
@@ -409,7 +408,7 @@ if page == 'IDA/EDA: Hormone':
         plot_boxplots(hormone, "Hormone", numeric_columns)
 
 if page == 'IDA/EDA: Quality of Life':
-    st.title("Quality of Life Analysis")
+    st.markdown("""<h1 style='color: pink;'><strong>'Quality of Life' Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
     st.subheader("Quality of Life Data")
     st.write(qualityOfLife)  # Display quality of life data
     numeric_columns = []
@@ -424,7 +423,7 @@ if page == 'IDA/EDA: Quality of Life':
 """, unsafe_allow_html=True)
 
 if page == 'IDA/EDA: Metabolic':
-    st.title("Metabolic Analysis")
+    st.markdown("""<h1 style='color: pink;'><strong>Metabolic Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
     st.subheader("Metabolic Data")
     st.write(metabolic)  # Display metabolic data
     numeric_columns = ['BMI', 'Waist:Hip Ratio', 'RBS(mg/dl)', 
@@ -440,7 +439,7 @@ if page == 'IDA/EDA: Metabolic':
 
 
 if page == 'IDA/EDA: Fertility':
-    st.title("Fertility Analysis")
+    st.markdown("""<h1 style='color: pink;'><strong>Fertility Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
     st.subheader("Fertility Data")
     st.write(fertility)  # Display fertility data
     numeric_columns = ['Cycle length(days)', 'Follicle No. (L)', 
@@ -459,10 +458,9 @@ if page == 'IDA/EDA: Fertility':
 # These variables will be used in further analysis.
 
 if page == 'Principal Component Analysis':
-    st.title("Principal Component Analysis (PCA)")
-
+    st.markdown("""<h1 style='color: pink;'><strong>Principal Component Analysis (PCA) </h1>""", unsafe_allow_html=True)
     # Display a brief introduction or description
-    st.subheader("Explore dimensionality reduction using PCA.")
+    st.subheader("Exploring dimensionality reduction using PCA.")
     st.write("""
         Principal Component Analysis (PCA) helps in reducing the dimensionality of data 
         while retaining most of the variance. Below, you can interact with the PCA plot 
@@ -561,7 +559,7 @@ if page == 'Principal Component Analysis':
         st.warning("Not enough components available for a 3D PCA plot. Select more features.")
 
 if page == 'Models':
-    st.title("Models")
+    st.markdown("""<h1 style='color: pink;'><strong>Machine Learning Models That Can Predict PCOS Risk </h1>""", unsafe_allow_html=True)
     st.subheader("Exploring Different Models for Classification")
     st.write(final_model_data)  # Display dataset for reference
 
@@ -604,6 +602,8 @@ if page == 'Models':
 
     best_svm_kernel = max(svm_accuracies, key=svm_accuracies.get)
     results['SVM (Best Kernel)'] = svm_accuracies[best_svm_kernel]
+    best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
+    best_svm_model.fit(X_train, y_train)
     
     ## Naive Bayes
     nb_model = GaussianNB()
