@@ -504,7 +504,7 @@ if page == 'Principal Component Analysis':
     st.write("""
         Principal Component Analysis (PCA) helps in reducing the dimensionality of data 
         while retaining most of the variance. Below, you can interact with the PCA plot 
-        and visualize the relationships between the variables in the transformed space.
+        and visualize the relationships between the variables in the transformed space Additionally, the sidebar allows users to include all 11 variables or exclude up to 9 of your choosing. Keep in mind, if only 2 PCs are chosen, the 3D plot with not execute.
     """)
     st.write(final_model_data)  # Display data being used in PCA (11 variables + target)
 
@@ -550,8 +550,8 @@ if page == 'Principal Component Analysis':
             st.sidebar.write(f"{selected_features[i]}/PC{i + 1}: {var:.2f}%")
     # Add a 3D PCA visualization
     st.subheader("Interactive 3D PCA Plot")
-    st.write("""Visualize the data in a 3D principal component space to explore clustering or patterns 
-    associated with PCOS classification.""")
+    st.write("""I have also visualized the data in a 3D principal component space to explore clustering or patterns 
+    associated with PCOS classification. Viewing the default 3D plot, it is clear that patients with PCOS are distinguishable from patients who do not have PCOS""")
 
     # Ensure at least 3 components are available for 3D plotting
     if components.shape[1] >= 3:
@@ -697,7 +697,7 @@ The model with the **best accuracy** is the **SVM model** using the **rbf (Radia
     
     
 if page == 'Nomogram Risk Assessment':
-    st.title("Interactive Nomogram for PCOS Risk Prediction")
+    st.markdown("""<h1 style='color: pink;'><strong> Interactive Nomogram for PCOS Risk Prediction </h1>""", unsafe_allow_html=True)
     if 'best_svm_model' in st.session_state:
         best_svm_model = st.session_state.best_svm_model
     else:
