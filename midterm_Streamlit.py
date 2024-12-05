@@ -699,9 +699,9 @@ if page == 'Nomogram Risk Assessment':
 
     # Sliders for numeric features (display unscaled values)
     for idx, feature in enumerate(numeric_features):
-        min_val = float(resampled_data[feature].min())
-        max_val = float(resampled_data[feature].max())
-        mean_val = float(resampled_data[feature].mean())
+        min_val = resampled_data[feature].min()
+        max_val = resampled_data[feature].max()
+        mean_val = resampled_data[feature].mean()
 
         if feature == "BMI":  # Replace "BMI" with the actual name of your BMI feature
             min_val = round(min_val, 2)
@@ -710,7 +710,10 @@ if page == 'Nomogram Risk Assessment':
             step_val = 0.01  # Allow decimal precision for BMI
         else:
             step_val = 1  # Integer values for other features
-    
+        # Check that all values passed to the slider are float types (if they are not already)
+        # min_val = float(min_val)
+        # max_val = float(max_val)
+        # mean_val = float(mean_val)
         # Display debug information to track feature details
         st.write(f"Feature: {feature}, Min: {min_val}, Max: {max_val}, Mean: {mean_val}, Step: {step_val}")
 
