@@ -676,10 +676,15 @@ if page == 'Nomogram Risk Assessment':
 
     # Sliders for numeric features (display unscaled values)
     for idx, feature in enumerate(numeric_features):
+        st.write(f"Feature: {feature}")  # Debugging line
+        st.write(f"Data for {feature}: {resampled_data[feature].head()}")  # Debugging line
+    
         min_val = float(resampled_data[feature].min())
         max_val = float(resampled_data[feature].max())
         mean_val = float(resampled_data[feature].mean())
         step_val = 0.01 if idx == 1 else 1  # Second feature allows decimals
+        # Debug the slider values to ensure they are correct
+        st.write(f"Min: {min_val}, Max: {max_val}, Mean: {mean_val}, Step: {0.01 if idx == 1 else 1}")  # Debugging line
     
         feature_inputs_unscaled[feature] = st.slider(
             f"Adjust{feature}", min_value=min_val, max_value=max_val, value=mean_val, step = step_val)
