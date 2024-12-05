@@ -17,6 +17,7 @@ from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.linear_model import Lasso
+from sklearn.metrics import ConfusionMatrixDisplay
 
 ### Creating functions ###
 
