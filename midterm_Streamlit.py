@@ -18,6 +18,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.linear_model import Lasso
 from sklearn.metrics import ConfusionMatrixDisplay
+import joblib
 
 ### Creating functions ###
 
@@ -657,9 +658,15 @@ if page == 'Models':
         )
         ax.set_title(f"Confusion Matrix: {model}")
         st.pyplot(fig)
+        st.session_state.best_svm_model = best_svm_model
     
 if page == 'Nomogram Risk Assessment':
     st.title("Interactive Nomogram for PCOS Risk Prediction")
+    # Access the model from session_state
+    if 'best_svm_model' in st.session_state:
+        best_svm_model = st.session_state.best_svm_model
+    else:
+        st.write("Model not found. Please load or train the model first.")
 
     # Description of the tool
     st.subheader("Adjust the following features to predict the risk of PCOS")
