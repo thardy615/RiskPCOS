@@ -711,9 +711,9 @@ if page == 'Nomogram Risk Assessment':
         else:
             step_val = 1  # Integer values for other features
         # Check that all values passed to the slider are float types (if they are not already)
-        # min_val = float(min_val)
-        # max_val = float(max_val)
-        # mean_val = float(mean_val)
+        min_val = float(min_val)
+        max_val = float(max_val)
+        mean_val = float(mean_val)
         # Display debug information to track feature details
         st.write(f"Feature: {feature}, Min: {min_val}, Max: {max_val}, Mean: {mean_val}, Step: {step_val}")
 
