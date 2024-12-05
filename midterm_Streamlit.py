@@ -653,8 +653,8 @@ if page == 'Nomogram Risk Assessment':
     scaler = StandardScaler()
 
     # Identify numeric and binary features
-    numeric_features = [feature for feature in feature_names if len(final_model_data[feature].unique()) > 2]
-    binary_features = [feature for feature in feature_names if feature not in numeric_features]
+    numeric_features = [feature for feature in features if len(final_model_data[feature].unique()) > 2]
+    binary_features = [feature for feature in features if feature not in numeric_features]
 
     # Collect user input for each feature
     # feature_inputs = {}
