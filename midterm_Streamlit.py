@@ -628,7 +628,11 @@ if page == 'Models':
     best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
     if 'best_svm_model' not in st.session_state:
         st.session_state.best_svm_model = best_svm_model
-    best_svm_model.fit(X_train, y_train)
+        best_svm_model.fit(X_train, y_train)
+        st.write("Model has been trained and stored in session state.")
+    else:
+        st.write("Model already exists in session state.")
+    # best_svm_model.fit(X_train, y_train)
     
     ## Naive Bayes
     nb_model = GaussianNB()
