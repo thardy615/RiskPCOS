@@ -11,6 +11,12 @@ import plotly.graph_objects as go
 import io
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.svm import SVC
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.linear_model import Lasso
 
 ### Creating functions ###
 
@@ -546,7 +552,67 @@ if page == 'Principal Component Analysis':
 
 if page == 'Models':
     st.title("Models")
-    st.subheader("Coming Soon!")
+    st.subheader("Exploring Different Models for Classification")
+    st.write(final_model_data)  # Display dataset for reference
+
+    # Split the data
+    target = 'PCOS (Y/N)'
+    X = final_model_data.drop(columns=[target])  # Features
+    y = final_model_data[target].astype(int)     # Target (binary)
+
+    split_pct = 0.70
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1 - split_pct, random_state=42)
+
+    # Model definitions
+    results = {}
+
+    ## Linear Regression
+    st.subheader("Linear Regression")
+    lin_reg = LinearRegression()
+    lin_reg.fit(X_train, y_train)
+    y_pred_lin = lin_reg.predict(X_test)
+    results['Linear Regression'] = accuracy_score(y_test, y_pred_lin.round())  # Round predictions
+
+    ## Logistic Regression
+    st.subheader("Logistic Regression")
+    log_reg = LogisticRegression(max_iter=1000, random_state=42)
+    log_reg.fit(X_train, y_train)
+    y_pred_log = log_reg.predict(X_test)
+    results['Logistic Regression'] = accuracy_score(y_test, y_pred_log)
+
+    ## LASSO Regression
+    st.subheader("LASSO Regression")
+    lasso = Lasso(alpha=0.1, random_state=42)
+    lasso.fit(X_train, y_train)
+    y_pred_lasso = lasso.predict(X_test)
+    results['LASSO Regression'] = accuracy_score(y_test, y_pred_lasso.round())  # Round predictions
+
+    ## Support Vector Machines (SVM)
+    st.subheader("Support Vector Machines (SVM)")
+    kernels = ['linear', 'rbf', 'poly', 'sigmoid']
+    svm_accuracies = {}
+    for kernel in kernels:
+        svm_model = SVC(kernel=kernel, random_state=42)
+        svm_model.fit(X_train, y_train)
+        y_pred_svm = svm_model.predict(X_test)
+        svm_accuracies[kernel] = accuracy_score(y_test, y_pred_svm)
+
+    best_svm_kernel = max(svm_accuracies, key=svm_accuracies.get)
+    results['SVM (Best Kernel)'] = svm_accuracies[best_svm_kernel]
+    st.write(f"Best SVM Kernel: {best_svm_kernel}")
+
+    ## Naive Bayes
+    st.subheader("Naive Bayes")
+    nb_model = GaussianNB()
+    nb_model.fit(X_train, y_train)
+    y_pred_nb = nb_model.predict(X_test)
+    results['Naive Bayes'] = accuracy_score(y_test, y_pred_nb)
+
+    # Display results
+    st.subheader("Model Comparison")
+    for model, acc in results.items():
+        st.write(f"{model}: {acc:.2f}")
+
     
 if page == 'Nomogram Risk Assessment':
     st.title("Nomogram Risk Assessment")
