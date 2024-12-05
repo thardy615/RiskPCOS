@@ -615,16 +615,16 @@ if page == 'Models':
     for model, acc in results.items():
         st.write(f"{model}: {acc:.2f}")
         # Generate predictions for the corresponding model
-        if model_name == "Linear Regression":
+        if model == "Linear Regression":
             y_pred = lin_reg.predict(X_test).round()
-        elif model_name == "Logistic Regression":
+        elif model == "Logistic Regression":
             y_pred = log_reg.predict(X_test)
-        elif model_name == "LASSO Regression":
+        elif model == "LASSO Regression":
             y_pred = lasso.predict(X_test).round()
-        elif model_name.startswith("SVM"):
+        elif model.startswith("SVM"):
             y_pred = best_svm_model.predict(X_test) 
             st.write(f"Best SVM Kernel: {best_svm_kernel}")
-        elif model_name == "Naive Bayes":
+        elif model == "Naive Bayes":
             y_pred = nb_model.predict(X_test)
 
         # Plot the confusion matrix
@@ -632,7 +632,7 @@ if page == 'Models':
         ConfusionMatrixDisplay.from_predictions(
             y_test, y_pred, ax=ax, cmap="Blues", colorbar=False
         )
-        ax.set_title(f"Confusion Matrix: {model_name}")
+        ax.set_title(f"Confusion Matrix: {model}")
         st.pyplot(fig)
     
 if page == 'Nomogram Risk Assessment':
