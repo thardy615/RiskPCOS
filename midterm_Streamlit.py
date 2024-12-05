@@ -701,8 +701,16 @@ if page == 'Nomogram Risk Assessment':
     #         f"Adjust{feature}", min_value=min_val, max_value=max_val, value=mean_val, step = step_val)
 
     # Identify numeric and binary features
-    numeric_features = [feature for feature in features if len(final_model_data[feature].unique()) > 2]
-    binary_features = [feature for feature in features if feature not in numeric_features]
+    # numeric_features = [feature for feature in features if len(final_model_data[feature].unique()) > 2]
+    # binary_features = [feature for feature in features if feature not in numeric_features]
+
+    target_variable = 'PCOS (Y/N)'  # Replace with the actual name of your target variable
+
+    # Exclude the target variable from the features list
+    numeric_features = [feature for feature in features if feature != target_variable and len(final_model_data[feature].unique()) > 2]
+    binary_features = [feature for feature in features if feature != target_variable and feature not in numeric_features]
+
+# Now the target variable will not show in your nomogram's sliders or dropdowns
     scaler = StandardScaler()
     scaler.fit(resampled_data[numeric_features])
 
