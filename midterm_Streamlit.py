@@ -238,7 +238,8 @@ page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: 
 if page == "Home":
     st.markdown("""<h1 style='color: pink;'><strong>RiskPCOS: A Polycystic Ovarian Syndrome (PCOS) Risk Assessment</h1>""", unsafe_allow_html=True)
     # Background Info
-    st.markdown("""<p style="font-size:18px;">Polycystic Ovarian Syndrome, also known as PCOS, is a metabolic syndrome and hormonal condition that impacts the female reproductive system in women of reproductive age. Although every woman's experience differs, symptoms include irregular periods, hirsutism (excessive hair growth), insulin resistance, weight gain, male-patterned balding, acne, ovarian/follicular cysts, and infertility. PCOS directly impacts fertility by interfering with the growth and release of eggs from the ovaries. For diagnosis, patients stereotypically require at least 2 of the following criteria: irregular periods, high androgen levels, and ovarian cysts. According to the WHO, it is estimated that this condition affects 8-13% of women among reproductive age; however, 70% of cases go undiagnosed. Given the (lack of) care for women's reproductive health, it is very common for it to take years to diagnose women who do have it. 
+    st.markdown("""<p style="font-size:18px;">Polycystic Ovarian Syndrome, also known as PCOS, is a metabolic syndrome and hormonal condition that impacts the female reproductive system in women of reproductive age. Although every woman's experience differs, symptoms include irregular periods, hirsutism (excessive hair growth), insulin resistance, weight gain, male-patterned balding, acne, ovarian/follicular cysts, and infertility. PCOS directly impacts fertility by interfering with the growth and release of eggs from the ovaries. </p>""", unsafe_allow_html=True)
+    st.markdown("""<p style="font-size:18px;">For diagnosis, patients stereotypically require at least 2 of the following criteria: irregular periods, high androgen levels, and ovarian cysts. According to the WHO, it is estimated that this condition affects 8-13% of women among reproductive age; however, 70% of cases go undiagnosed. Given the (lack of) care for women's reproductive health, it is very common for it to take years to diagnose women who do have it.
     This app aims to predict PCOS diagnosis among fertile women and compare fertility measures (AMH) among infertile and fertile women with/without PCOS.</p>""", unsafe_allow_html=True)
     # Source Information
     st.write("Source: [World Health Organization](https://www.who.int/news-room/fact-sheets/detail/polycystic-ovary-syndrome)")
@@ -676,33 +677,6 @@ if page == 'Nomogram Risk Assessment':
     st.subheader("Adjust the following features to predict the risk of PCOS")
     st.write("""This nomogram allows you to adjust the values of different features, 
     and based on the selected `best_svm_model`, the risk of having PCOS will be calculated.""")
-    
-    # Identify numeric and binary features
-    # numeric_features = [feature for feature in features if len(final_model_data[feature].unique()) > 2]
-    # binary_features = [feature for feature in features if feature not in numeric_features]
-    # scaler = StandardScaler()
-    # scaler.fit(resampled_data[numeric_features])
-
-    # feature_inputs_unscaled = {}
-
-    # # Sliders for numeric features (display unscaled values)
-    # for idx, feature in enumerate(numeric_features):
-    #     st.write(f"Feature: {feature}")  # Debugging line
-    #     st.write(f"Data for {feature}: {resampled_data[feature].head()}")  # Debugging line
-    
-    #     min_val = float(resampled_data[feature].min())
-    #     max_val = float(resampled_data[feature].max())
-    #     mean_val = float(resampled_data[feature].mean())
-    #     step_val = 0.01 if idx == 1 else 1  # Second feature allows decimals
-    #     # Debug the slider values to ensure they are correct
-    #     st.write(f"Min: {min_val}, Max: {max_val}, Mean: {mean_val}, Step: {0.01 if idx == 1 else 1}")  # Debugging line
-    
-    #     feature_inputs_unscaled[feature] = st.slider(
-    #         f"Adjust{feature}", min_value=min_val, max_value=max_val, value=mean_val, step = step_val)
-
-    # Identify numeric and binary features
-    # numeric_features = [feature for feature in features if len(final_model_data[feature].unique()) > 2]
-    # binary_features = [feature for feature in features if feature not in numeric_features]
 
     target_variable = 'PCOS (Y/N)'  # Replace with the actual name of your target variable
 
@@ -710,7 +684,6 @@ if page == 'Nomogram Risk Assessment':
     numeric_features = [feature for feature in features if feature != target_variable and len(final_model_data[feature].unique()) > 2]
     binary_features = [feature for feature in features if feature != target_variable and feature not in numeric_features]
 
-# Now the target variable will not show in your nomogram's sliders or dropdowns
     scaler = StandardScaler()
     scaler.fit(resampled_data[numeric_features])
 
@@ -726,9 +699,7 @@ if page == 'Nomogram Risk Assessment':
         min_val = float(min_val)
         max_val = float(max_val)
         mean_val = float(mean_val)
-        # Display debug information to track feature details
-        st.write(f"Feature: {feature}, Min: {min_val}, Max: {max_val}, Mean: {mean_val}")
-
+        
         # Add the slider input for the user
         feature_inputs_unscaled[feature] = st.slider(
             f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
@@ -738,31 +709,13 @@ if page == 'Nomogram Risk Assessment':
     for feature in binary_features:
         feature_inputs_unscaled[feature] = st.selectbox(
             f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
-
-    # # Scale numeric inputs dynamically
-    # numeric_inputs_unscaled = [feature_inputs_unscaled[feature] for feature in numeric_features]
-    # numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]  # Scale for model
-
-    # # Combine scaled numeric features and raw binary features
-    # model_inputs = []
-    # for feature in features:
-    #     if feature in numeric_features:
-    #         model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
-    #     else:
-    #         model_inputs.append(feature_inputs_unscaled[feature])
-
-
+    
     # Calculate the risk based on the model
-    # risk = calculate_risk(input_features, best_svm_model)
-    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, numeric_features)
-    # decision_value = best_svm_model.decision_function([model_inputs])  # Log-odds
-    # risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
 
+    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, numeric_features)
+    
     # Display the calculated risk as a percentage
     st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
-
-    # Optional: You could create a plot here showing how the risk changes with different variables if needed
-    # (e.g., using a bar chart for each variable's influence)
 
     
 if page == "Normal Lab Work Results":
