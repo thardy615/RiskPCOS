@@ -665,12 +665,12 @@ if page == 'Nomogram Risk Assessment':
     st.subheader("Adjust the following features to predict the risk of PCOS")
     st.write("""This nomogram allows you to adjust the values of different features, 
     and based on the selected `best_svm_model`, the risk of having PCOS will be calculated.""")
-    scaler = StandardScaler()
-    scaler.fit(resampled_data[numeric_features])
     
     # Identify numeric and binary features
     numeric_features = [feature for feature in features if len(final_model_data[feature].unique()) > 2]
     binary_features = [feature for feature in features if feature not in numeric_features]
+    scaler = StandardScaler()
+    scaler.fit(resampled_data[numeric_features])
 
     feature_inputs_unscaled = {}
 
