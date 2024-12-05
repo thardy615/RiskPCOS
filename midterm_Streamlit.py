@@ -491,8 +491,8 @@ if page == 'Principal Component Analysis':
         fig.update_layout(
             xaxis_tickangle=0,  # X-axis labels horizontal
             yaxis_tickangle=0,  # Y-axis labels horizontal
-            xaxis=dict(tickfont=dict(size=10)),
-            yaxis=dict(tickfont=dict(size=10)),
+            xaxis=dict(tickfont=dict(size=5)),
+            yaxis=dict(tickfont=dict(size=5)),
             autosize=True
         )
 
