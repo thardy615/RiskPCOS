@@ -473,7 +473,7 @@ if page == 'Principal Component Analysis':
 
         # Explained variance ratio
         explained_variance = pca.explained_variance_ratio_ * 100
-        labels = {str(i): f"PC {i+1} ({var:.1f}%)" for i, var in enumerate(explained_variance)}
+        labels = {str(i): f"PC {i+1}}
         final_model_data[color_by] = final_model_data[color_by].astype(str)
 
         # Create scatter matrix plot
@@ -493,7 +493,7 @@ if page == 'Principal Component Analysis':
         # Show explained variance in sidebar
         st.sidebar.write("Explained Variance Ratios:")
         for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)]):
-            st.sidebar.write(f"{selected_features[i]}: {var:.2f}%")
+            st.sidebar.write(f"{selected_features[i]}/PC{i}: {var:.2f}%")
 
 
 if page == 'Cluster Analysis':
