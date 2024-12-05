@@ -662,12 +662,14 @@ if page == 'Models':
     
 if page == 'Nomogram Risk Assessment':
     st.title("Interactive Nomogram for PCOS Risk Prediction")
-    # Access the model from session_state
-    if 'best_svm_model' in st.session_state:
-        best_svm_model = st.session_state.best_svm_model
+    if 'best_svm_model' not in st.session_state:
+        # Assuming you load or train your model here
+        best_svm_model = joblib.load("path_to_your_model.pkl")
+        # Store it in session_state
+        st.session_state.best_svm_model = best_svm_model
+        st.write("Model loaded successfully!")
     else:
-        st.write("Model not found. Please load or train the model first.")
-
+        st.write("Model is already loaded in session_state.")
     # Description of the tool
     st.subheader("Adjust the following features to predict the risk of PCOS")
     st.write("""This nomogram allows you to adjust the values of different features, 
