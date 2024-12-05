@@ -626,6 +626,8 @@ if page == 'Models':
     best_svm_kernel = max(svm_accuracies, key=svm_accuracies.get)
     results['SVM (Best Kernel)'] = svm_accuracies[best_svm_kernel]
     best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
+    if 'best_svm_model' not in st.session_state:
+        st.session_state.best_svm_model = best_svm_model
     best_svm_model.fit(X_train, y_train)
     
     ## Naive Bayes
@@ -658,19 +660,14 @@ if page == 'Models':
         )
         ax.set_title(f"Confusion Matrix: {model}")
         st.pyplot(fig)
-    if 'best_svm_model' not in st.session_state:
-        st.session_state.best_svm_model = best_svm_model
+    
     
 if page == 'Nomogram Risk Assessment':
     st.title("Interactive Nomogram for PCOS Risk Prediction")
-    if 'best_svm_model' not in st.session_state:
-        # Assuming you load or train your model here
-        best_svm_model = joblib.load("path_to_your_model.pkl")
-        # Store it in session_state
-        st.session_state.best_svm_model = best_svm_model
-        st.write("Model loaded successfully!")
+    if 'best_svm_model' in st.session_state:
+        best_svm_model = st.session_state.best_svm_model
     else:
-        st.write("Model is already loaded in session_state.")
+        st.write("Model not found. Please load or train the model first.")
     # Description of the tool
     st.subheader("Adjust the following features to predict the risk of PCOS")
     st.write("""This nomogram allows you to adjust the values of different features, 
