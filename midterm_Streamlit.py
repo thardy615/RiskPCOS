@@ -161,6 +161,15 @@ def plot_boxplots(subset, title, numeric_columns):
             fig.update_layout(xaxis_title='PCOS (Y/N)', yaxis_title=col, margin=dict(l=40, r=40, t=40, b=40)) # Includes (equal) margin space around plot area
             st.plotly_chart(fig)  # Plot
 
+# Function to plot confusion matrix
+def plot_confusion_matrix(model_name, y_true, y_pred):
+    fig, ax = plt.subplots(figsize=(5, 5))
+    ConfusionMatrixDisplay.from_predictions(
+        y_true, y_pred, ax=ax, cmap='Blues', colorbar=False
+    )
+    ax.set_title(f"Confusion Matrix: {model_name}")
+    st.pyplot(fig)
+
 ######################################################
 
 resampled_data = prepare_resampled_data() # Use function above to get SMOTE dataframe
@@ -567,28 +576,24 @@ if page == 'Models':
     results = {}
 
     ## Linear Regression
-    st.subheader("Linear Regression")
     lin_reg = LinearRegression()
     lin_reg.fit(X_train, y_train)
     y_pred_lin = lin_reg.predict(X_test)
     results['Linear Regression'] = accuracy_score(y_test, y_pred_lin.round())  # Round predictions
 
     ## Logistic Regression
-    st.subheader("Logistic Regression")
     log_reg = LogisticRegression(max_iter=1000, random_state=42)
     log_reg.fit(X_train, y_train)
     y_pred_log = log_reg.predict(X_test)
     results['Logistic Regression'] = accuracy_score(y_test, y_pred_log)
 
     ## LASSO Regression
-    st.subheader("LASSO Regression")
     lasso = Lasso(alpha=0.1, random_state=42)
     lasso.fit(X_train, y_train)
     y_pred_lasso = lasso.predict(X_test)
     results['LASSO Regression'] = accuracy_score(y_test, y_pred_lasso.round())  # Round predictions
 
     ## Support Vector Machines (SVM)
-    st.subheader("Support Vector Machines (SVM)")
     kernels = ['linear', 'rbf', 'poly', 'sigmoid']
     svm_accuracies = {}
     for kernel in kernels:
@@ -599,7 +604,7 @@ if page == 'Models':
 
     best_svm_kernel = max(svm_accuracies, key=svm_accuracies.get)
     results['SVM (Best Kernel)'] = svm_accuracies[best_svm_kernel]
-    st.write(f"Best SVM Kernel: {best_svm_kernel}")
+    
 
     ## Naive Bayes
     st.subheader("Naive Bayes")
@@ -612,6 +617,26 @@ if page == 'Models':
     st.subheader("Model Comparison")
     for model, acc in results.items():
         st.write(f"{model}: {acc:.2f}")
+        # Generate predictions for the corresponding model
+        if model_name == "Linear Regression":
+            y_pred = lin_reg.predict(X_test).round()
+        elif model_name == "Logistic Regression":
+            y_pred = log_reg.predict(X_test)
+        elif model_name == "LASSO Regression":
+            y_pred = lasso.predict(X_test).round()
+        elif model_name.startswith("SVM"):
+            y_pred = svm_model.predict(X_test) 
+            st.write(f"Best SVM Kernel: {best_svm_kernel}")
+        elif model_name == "Naive Bayes":
+            y_pred = nb_model.predict(X_test)
+
+        # Plot the confusion matrix
+        fig, ax = plt.subplots(figsize=(5, 5))
+        ConfusionMatrixDisplay.from_predictions(
+            y_test, y_pred, ax=ax, cmap="Blues", colorbar=False
+        )
+        ax.set_title(f"Confusion Matrix: {model_name}")
+        st.pyplot(fig)
 
     
 if page == 'Nomogram Risk Assessment':
