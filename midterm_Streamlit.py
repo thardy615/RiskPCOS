@@ -650,36 +650,70 @@ if page == 'Nomogram Risk Assessment':
     st.subheader("Adjust the following features to predict the risk of PCOS")
     st.write("""This nomogram allows you to adjust the values of different features, 
     and based on the selected `best_svm_model`, the risk of having PCOS will be calculated.""")
+    scaler = StandardScaler()
+
+    # Identify numeric and binary features
+    numeric_features = [feature for feature in feature_names if len(final_model_data[feature].unique()) > 2]
+    binary_features = [feature for feature in feature_names if feature not in numeric_features]
 
     # Collect user input for each feature
-    feature_inputs = {}
+    # feature_inputs = {}
+    # for feature in features:
+    #     feature_inputs[feature] = st.slider(f"Adjust {feature}", min_value=final_model_data[feature].min(), 
+    #                                         max_value=final_model_data[feature].max(), 
+    #                                         value=float(final_model_data[feature].mean()))
+    # Collect user inputs
+    feature_inputs_unscaled = {}
+
+    # Sliders for numeric features (display unscaled values)
+    for feature in numeric_features:
+        min_val = resampled_data[feature].min()
+        max_val = resampled_data[feature].max()
+        mean_val = resampled_data[feature].mean()
+        feature_inputs_unscaled[feature] = st.slider(
+            f"Adjust {feature}", min_value=float(min_val), max_value=float(max_val), value=float(mean_val))
+
+    # Dropdowns for binary features
+    for feature in binary_features:
+        feature_inputs_unscaled[feature] = st.selectbox(
+            f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
+
+    # Scale numeric inputs dynamically
+    numeric_inputs_unscaled = [feature_inputs_unscaled[feature] for feature in numeric_features]
+    numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]  # Scale for model
+
+    # Combine scaled numeric features and raw binary features
+    model_inputs = []
     for feature in features:
-        feature_inputs[feature] = st.slider(f"Adjust {feature}", min_value=final_model_data[feature].min(), 
-                                            max_value=final_model_data[feature].max(), 
-                                            value=float(final_model_data[feature].mean()))
+        if feature in numeric_features:
+            model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
+        else:
+            model_inputs.append(feature_inputs_unscaled[feature])
 
-    # Prepare feature list for prediction
-    input_features = [
-        feature_inputs['Age (yrs)'],
-        feature_inputs['BMI'],
-        feature_inputs['Cycle length(days)'],
-        feature_inputs['AMH(ng/mL)'],
-        feature_inputs['Follicle No. (L)'],
-        feature_inputs['Follicle No. (R)'],
-        feature_inputs['hair growth(Y/N)'],
-        feature_inputs['Skin darkening (Y/N)'],
-        feature_inputs['Hair loss(Y/N)'],
-        feature_inputs['Pimples(Y/N)'],
-        feature_inputs['Weight gain(Y/N)']]
+    # # Prepare feature list for prediction
+    # input_features = [
+    #     feature_inputs['Age (yrs)'],
+    #     feature_inputs['BMI'],
+    #     feature_inputs['Cycle length(days)'],
+    #     feature_inputs['AMH(ng/mL)'],
+    #     feature_inputs['Follicle No. (L)'],
+    #     feature_inputs['Follicle No. (R)'],
+    #     feature_inputs['hair growth(Y/N)'],
+    #     feature_inputs['Skin darkening (Y/N)'],
+    #     feature_inputs['Hair loss(Y/N)'],
+    #     feature_inputs['Pimples(Y/N)'],
+    #     feature_inputs['Weight gain(Y/N)']]
 
-# Calculate the risk based on the model
-risk = calculate_risk(input_features, best_svm_model)
+    # Calculate the risk based on the model
+    # risk = calculate_risk(input_features, best_svm_model)
+    decision_value = best_svm_model.decision_function([model_inputs])  # Log-odds
+    risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
 
-# Display the calculated risk as a percentage
-st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
+    # Display the calculated risk as a percentage
+    st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
 
-# Optional: You could create a plot here showing how the risk changes with different variables if needed
-# (e.g., using a bar chart for each variable's influence)
+    # Optional: You could create a plot here showing how the risk changes with different variables if needed
+    # (e.g., using a bar chart for each variable's influence)
 
     
 if page == "Normal Lab Work Results":
