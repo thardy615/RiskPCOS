@@ -671,29 +671,22 @@ if page == 'Nomogram Risk Assessment':
     numeric_features = [feature for feature in features if len(final_model_data[feature].unique()) > 2]
     binary_features = [feature for feature in features if feature not in numeric_features]
 
-    # Collect user input for each feature
-    # feature_inputs = {}
-    # for feature in features:
-    #     feature_inputs[feature] = st.slider(f"Adjust {feature}", min_value=final_model_data[feature].min(), 
-    #                                         max_value=final_model_data[feature].max(), 
-    #                                         value=float(final_model_data[feature].mean()))
-    # Collect user inputs
     feature_inputs_unscaled = {}
 
     # Sliders for numeric features (display unscaled values)
-    for idx, feature in numeric_features:
+    for idx, feature in enumerate(numeric_features):
         min_val = resampled_data[feature].min()
         max_val = resampled_data[feature].max()
         mean_val = resampled_data[feature].mean()
         step_val = 0.01 if idx == 1 else 1  # Second feature allows decimals
     
         feature_inputs_unscaled[feature] = st.slider(
-            f"Adjust {feature}", min_value=float(min_val), max_value=float(max_val), value=float(mean_val), step = step_val)
+            f"{feature}", min_value=float(min_val), max_value=float(max_val), value=float(mean_val), step = step_val)
 
     # Dropdowns for binary features
     for feature in binary_features:
         feature_inputs_unscaled[feature] = st.selectbox(
-            f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
+            f"{feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
 
     # # Scale numeric inputs dynamically
     # numeric_inputs_unscaled = [feature_inputs_unscaled[feature] for feature in numeric_features]
@@ -707,19 +700,6 @@ if page == 'Nomogram Risk Assessment':
     #     else:
     #         model_inputs.append(feature_inputs_unscaled[feature])
 
-    # # Prepare feature list for prediction
-    # input_features = [
-    #     feature_inputs['Age (yrs)'],
-    #     feature_inputs['BMI'],
-    #     feature_inputs['Cycle length(days)'],
-    #     feature_inputs['AMH(ng/mL)'],
-    #     feature_inputs['Follicle No. (L)'],
-    #     feature_inputs['Follicle No. (R)'],
-    #     feature_inputs['hair growth(Y/N)'],
-    #     feature_inputs['Skin darkening (Y/N)'],
-    #     feature_inputs['Hair loss(Y/N)'],
-    #     feature_inputs['Pimples(Y/N)'],
-    #     feature_inputs['Weight gain(Y/N)']]
 
     # Calculate the risk based on the model
     # risk = calculate_risk(input_features, best_svm_model)
