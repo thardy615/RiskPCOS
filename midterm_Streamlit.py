@@ -239,9 +239,9 @@ if page == "Home":
     st.markdown("""<h1 style='color: pink;'><strong>RiskPCOS: A Polycystic Ovarian Syndrome (PCOS) Risk Assessment</h1>""", unsafe_allow_html=True)
     # Background Info
     st.markdown("""<p style="font-size:18px;">Polycystic Ovarian Syndrome, also known as PCOS, is a metabolic syndrome and hormonal condition that impacts the female reproductive system in women of reproductive age. PCOS directly impacts fertility by interfering with the growth and release of eggs from the ovaries. </p>""", unsafe_allow_html=True)
-    st.write(""" ### Although every woman's experience differs, symptoms include:
+    st.write(""" #### Although every woman's experience differs, symptoms include:
     
-    - **irregular periods **
+    - **irregular periods**
     - **hirsutism (excessive hair growth)**
     - **insulin resistance**
     - **weight gain**
@@ -253,7 +253,7 @@ if page == "Home":
     - **infertility**
     """)
     
-    st.write(""" ### For diagnosis, patients stereotypically require at least 2 of the following criteria:
+    st.write(""" #### For diagnosis, patients stereotypically require at least 2 of the following criteria:
     
     - **irregular periods**
     - **high androgen levels**
