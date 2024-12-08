@@ -238,8 +238,21 @@ page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: 
 if page == "Home":
     st.markdown("""<h1 style='color: pink;'><strong>RiskPCOS: A Polycystic Ovarian Syndrome (PCOS) Risk Assessment</h1>""", unsafe_allow_html=True)
     # Background Info
-    st.markdown("""<p style="font-size:18px;">Polycystic Ovarian Syndrome, also known as PCOS, is a metabolic syndrome and hormonal condition that impacts the female reproductive system in women of reproductive age. Although every woman's experience differs, symptoms include irregular periods, hirsutism (excessive hair growth), insulin resistance, weight gain, male-patterned balding, acne, ovarian/follicular cysts, and infertility. PCOS directly impacts fertility by interfering with the growth and release of eggs from the ovaries. </p>""", unsafe_allow_html=True)
-    st.markdown("""<p style="font-size:18px;">For diagnosis, patients stereotypically require at least 2 of the following criteria: irregular periods, high androgen levels, and ovarian cysts. According to the WHO, it is estimated that this condition affects 8-13% of women among reproductive age; however, 70% of cases go undiagnosed. Given the (lack of) care for women's reproductive health, it is very common for it to take years to diagnose women who do have it.
+    st.markdown("""<p style="font-size:18px;">Polycystic Ovarian Syndrome, also known as PCOS, is a metabolic syndrome and hormonal condition that impacts the female reproductive system in women of reproductive age. Although every woman's experience differs, symptoms include:
+    - irregular periods 
+    - hirsutism (excessive hair growth)
+    - insulin resistance 
+    - weight gain
+    - male-patterned balding
+    - (cystic) acne
+    - ovarian/follicular cysts
+    - infertility 
+    PCOS directly impacts fertility by interfering with the growth and release of eggs from the ovaries. </p>""", unsafe_allow_html=True)
+    st.markdown("""<p style="font-size:18px;">For diagnosis, patients stereotypically require at least 2 of the following criteria: 
+    - irregular periods
+    - high androgen levels
+    - ovarian cysts
+    According to the WHO, it is estimated that this condition affects 8-13% of women among reproductive age; however, 70% of cases go undiagnosed. Given the (lack of) care for women's reproductive health, it is very common for it to take years to diagnose women who do have it.
     This app aims to predict PCOS diagnosis among fertile women and compare fertility measures (AMH) among infertile and fertile women with/without PCOS.</p>""", unsafe_allow_html=True)
     # Source Information
     st.write("Source: [World Health Organization](https://www.who.int/news-room/fact-sheets/detail/polycystic-ovary-syndrome)")
