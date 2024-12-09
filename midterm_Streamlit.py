@@ -203,32 +203,6 @@ def calculate_risk(features_unscaled, model, scaler, numeric_features, log_scale
     decision_value = model.decision_function([model_inputs])  # Log-odds
     risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
     return risk[0]
-    #     # Separate and scale numeric inputs
-    # numeric_inputs_unscaled = [features_unscaled[feature] for feature in numeric_features]
-    # numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]
-
-    # # Log scale the appropriate features
-    # log_inputs_unscaled = [features_unscaled[feature] for feature in log_scale_cols]
-    # log_inputs_scaled = [np.log1p(value) for value in log_inputs_unscaled]
-
-    # # Combine scaled numeric inputs with log-scaled inputs and binary inputs
-    # model_inputs = []
-    # for feature in features_unscaled:
-    #     if feature in numeric_features:
-    #         if feature in log_scale_cols:
-    #             # Use log-scaled input
-    #             model_inputs.append(log_inputs_scaled[log_scale_cols.index(feature)])
-    #         else:
-    #             # Use standard-scaled input
-    #             model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
-    #     else:
-    #         # Append binary input directly
-    #         model_inputs.append(features_unscaled[feature])
-
-    # # Calculate log-odds using the model's decision function
-    # decision_value = model.decision_function([model_inputs])  # Log-odds
-    # risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
-    # return risk[0]
 # ChatGPT 4o was utilized to create the function above on 12/3/24
 ######################################################
 
@@ -237,10 +211,6 @@ resampled_data = prepare_resampled_data() # Use function above to get SMOTE data
 # Call the prepare_resampled_data function to prepare data and store in session state
 # Just in case, since I kept running into trouble
 st.session_state.resampled_data = prepare_resampled_data()
-
-# if 'resampled_data' not in st.session_state:
-#     st.session_state.resampled_data = prepare_resampled_data()
-
     
 # Create subsets for visualizations for each page
 hormone_unscaled = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
@@ -498,10 +468,10 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     'Endometrium (mm)'
 ]
 
-    # Define columns to log scale
+    # Define columns that need to be log scaled
     log_scale_cols = ['FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRG(ng/mL)']
 
-    # Apply log scaling to the specified columns
+    # Apply log scaling
     merged_df[log_scale_cols] = merged_df[log_scale_cols].apply(lambda x: np.log1p(x))
 
     # Scale the remaining numeric columns using z-score
@@ -538,7 +508,6 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     # Percentage of PCOS cases
     percentage = (class_counts[1] / class_counts.sum()) * 100
     st.write(f"Percentage of PCOS cases: {percentage:.2f}%")
-    
 
     st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
 
@@ -563,7 +532,6 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     all_variables_scaled = resampled_data
     st.session_state.all_variables_scaled = all_variables_scaled
     
-
     # Display class distribution after SMOTE
     st.write("Class distribution after SMOTE:")
     st.write(pd.Series(y_resampled).value_counts())
@@ -585,8 +553,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
 
 all_variables_scaled = st.session_state.all_variables_scaled
-# else:
-#     st.write("To retrieve scaled data, go to Data page before viewing IDA/EDA")
+
 # Create subsets for visualizations for each page
 hormone = all_variables_scaled[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
  'PRG(ng/mL)', 'Pregnant(Y/N)']]
@@ -804,7 +771,7 @@ To interpet the model performance, I have generated a confusion matrix (comparin
 An R² of 0% means the model does not explain any of the variation in the response variables around their respective means, meanwhile 100% means that all variation is explained. Keep in mind, it is possible for a good model to have a low R², and it is possible for a biased/unfit model to have a high R².
 Furthermore, I have calculated the **precision** (% of true positive divided by all actually positive), **recall** (% of true positive divided by all predicted positive), **F1 score** ((2 x Precision x Recall)/(Precision + Recall)), and **Mean Absolute Error/MAE**(the average magnitude of the absolute errors between the predicted and actual values).
 """)
-    # Display an image using a URL
+    # Display cm image using URL
     image_url2 = "https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c42677529a0f4e97e4f96_644aea65cefe35380f198a5a_class_guide_cm08.png"
     st.image(image_url2, caption = "How to interpret a confusion matrix for a machine learning model", use_column_width=True)
     st.write("Displaying the data utilized in each model for reference:")
@@ -971,45 +938,3 @@ if page == 'Nomogram Risk Assessment':
     st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
 
     st.write("In the future I hope to include androgen hormone measurements in my model. Additionally, I would like to access even more different types of models to see if I can improve my nomogram!")
-
-# target_variable = 'PCOS (Y/N)' 
-
-    # # Exclude the target variable from the features list
-    # numeric_features = [feature for feature in features if feature != target_variable and len(final_model_data[feature].unique()) > 2]
-    # binary_features = [feature for feature in features if feature != target_variable and feature not in numeric_features]
-
-    # resampled_data = prepare_resampled_data()
-    # scaler = StandardScaler()
-    # scaler.fit(resampled_data[numeric_features])
-
-    # feature_inputs_unscaled = {}
-
-    # # Sliders for numeric features (display unscaled values)
-    # for idx, feature in enumerate(numeric_features):
-    #     min_val = resampled_data[feature].min()
-    #     max_val = resampled_data[feature].max()
-    #     mean_val = resampled_data[feature].mean()
-
-    #     # Check that all values passed to the slider are float types 
-    #     min_val = float(min_val)
-    #     max_val = float(max_val)
-    #     mean_val = float(mean_val)
-        
-    #     # Add the slider input for the nomogram
-    #     feature_inputs_unscaled[feature] = st.slider(
-    #         f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
-    #     )
-
-    # # Dropdowns for binary features
-    # for feature in binary_features:
-    #     feature_inputs_unscaled[feature] = st.selectbox(
-    #         f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
-    
-    # # Calculate the risk based on the model
-    # risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, numeric_features, log_scale_cols)
-    
-    # # Display the calculated risk as a percentage
-    # st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
-
-    
-
