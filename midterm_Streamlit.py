@@ -476,7 +476,7 @@ if page == 'IDA/EDA: Hormone':
     st.markdown("""
 <p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my PCA analysis and my models accessed for the nomogram.  
 </p>""", unsafe_allow_html=True)
-    st.write(hormone)  # Display hormone data
+    st.write(hormone_unscaled)  # Display hormone data
     numeric_columns = ['Age (yrs)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 
                            'PRL(ng/mL)', 'PRG(ng/mL)']
     categorical_columns = ['Pregnant(Y/N)']
@@ -494,7 +494,7 @@ if page == 'IDA/EDA: Quality of Life':
 <p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my PCA analysis and my models accessed for the nomogram.   
 </p>""", unsafe_allow_html=True)
     st.subheader("Quality of Life Data")
-    st.write(qualityOfLife)  # Display quality of life data
+    st.write(qualityOfLife_unscaled)  # Display quality of life data
     numeric_columns = []
     categorical_columns = ['Pregnant(Y/N)', 'Weight gain(Y/N)', 
                                'hair growth(Y/N)', 'Skin darkening (Y/N)', 
@@ -513,13 +513,13 @@ if page == 'IDA/EDA: Metabolic':
 <p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my PCA analysis and my models accessed for the nomogram.   
 </p>""", unsafe_allow_html=True)
     st.subheader("Metabolic Data")
-    st.write(metabolic)  # Display metabolic data
+    st.write(metabolic_unscaled)  # Display metabolic data
     numeric_columns = ['BMI', 'Waist:Hip Ratio', 'RBS(mg/dl)', 
                            'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)']
     categorical_columns = ['Pregnant(Y/N)', 'Reg.Exercise(Y/N)', 
                                'Weight gain(Y/N)', 'Skin darkening (Y/N)']
     if st.button('Show Distributions'):
-        plot_distributions(metabolic, "Metabolic", numeric_columns, categorical_columns)
+        plot_distributions(metabolic_unscaled, "Metabolic", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(metabolic, "Metabolic")
     if st.button('Show Boxplots'):
@@ -533,7 +533,7 @@ if page == 'IDA/EDA: Fertility':
 <p style="font-size:18px;">The table below includes my variables used for this IDA/EDA. I generated Distribution Plots, Correlations, and Box Plots for each variable in respect to patients have PCOS (0 = No, 1 = Yes). For variables correlated with PCOS, those variables were utilized in my PCA analysis and my models accessed for the nomogram.   
 </p>""", unsafe_allow_html=True)
     st.subheader("Fertility Data")
-    st.write(fertility)  # Display fertility data
+    st.write(fertility_unscaled)  # Display fertility data
     numeric_columns = ['Cycle length(days)', 'Follicle No. (L)', 
                            'Follicle No. (R)', 'Avg. F size (L) (mm)', 
                            'Avg. F size (R) (mm)', 'Endometrium (mm)']
