@@ -660,9 +660,8 @@ if page == 'Principal Component Analysis':
         st.plotly_chart(fig)
         # Show explained variance 
         st.write("Explained Variance Percentages:")
-        for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)]):
-            st.write(f"{selected_features[i]}/PC{i + 1}: {var:.2f}%")
-
+        bullet_points = "\n".join([f"- **{selected_features[i]}/PC{i + 1}**: {var:.2f}%" for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)])])
+        st.markdown(bullet_points)
         
     # Add a 3D PCA visualization
     st.subheader("Interactive 3D PCA Plot")
