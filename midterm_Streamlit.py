@@ -176,7 +176,7 @@ def plot_confusion_matrix(model_name, y_true, y_pred):
     st.pyplot(fig)
     
 # Define a function to calculate the "log-odds" based on the model's decision function
-def calculate_risk(features_unscaled, model, scaler, numeric_features):
+def calculate_risk(features_unscaled, model, scaler, numeric_features, log_scale_cols):
     # # Separate numeric and binary features
     # numeric_inputs_unscaled = [features_unscaled[feature] for feature in numeric_features]
     # binary_inputs = [features_unscaled[feature] for feature in features_unscaled if feature not in numeric_features]
@@ -975,7 +975,7 @@ if page == 'Nomogram Risk Assessment':
         )
 
     # Calculate the risk
-    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, remaining_cols)
+    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, remaining_cols, log_scale_cols)
 
     # Display the risk
     st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
