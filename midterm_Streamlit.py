@@ -231,7 +231,7 @@ remaining_cols = [col for col in true_numeric_cols if col not in log_scale_cols]
 data_scaled = resampled_data[remaining_cols].apply(zscore)
 
 # Combine the log-scaled columns and z-score scaled columns
-df_scaled[log_scale_cols] = resampled_data[log_scale_cols]
+data_scaled[log_scale_cols] = resampled_data[log_scale_cols]
 
 # Non-scaled columns
 non_scaled_cols = [
