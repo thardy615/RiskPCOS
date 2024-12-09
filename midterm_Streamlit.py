@@ -17,8 +17,6 @@ from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, mean_absolute_error, ConfusionMatrixDisplay, r2_score
 from sklearn.linear_model import Lasso
-from sklearn.metrics import ConfusionMatrixDisplay
-from sklearn.metrics import r2_score
 import joblib
 
 ### Creating functions ###
@@ -233,7 +231,6 @@ data_scaled = resampled_data[remaining_cols].apply(zscore)
 # Combine the log-scaled columns and z-score scaled columns
 # Apply log scaling to the specified columns
 data_scaled[log_scale_cols] = resampled_data[log_scale_cols].apply(lambda x: np.log1p(x))
-# data_scaled[log_scale_cols] = resampled_data[log_scale_cols]
 
 # Non-scaled columns
 non_scaled_cols = [
@@ -246,10 +243,6 @@ non_scaled_cols = [
 ]
 
 # Combine scaled and non-scaled columns to create final df
-# final_model_data = pd.concat([df_scaled, resampled_data[non_scaled_cols]], axis=1)
-
-# Scaling
-# data_scaled = resampled_data[true_numeric_cols].apply(zscore)
 non_scaled_cols = ['hair growth(Y/N)', 'Skin darkening (Y/N)', 'Pimples(Y/N)','Weight gain(Y/N)', 'PCOS (Y/N)']
 final_model_data = pd.concat([data_scaled, resampled_data[non_scaled_cols]], axis=1)
 features = ['BMI', 'AMH(ng/mL)', 'Follicle No. (L)', 'Follicle No. (R)', 
@@ -289,7 +282,8 @@ if page == "Home":
 
     """)
     st.markdown("""<p style="font-size:18px;"> According to the World Health Organization(WHO), it is estimated that this condition affects 8-13% of women among reproductive age; however, 70% of cases go undiagnosed. Given the (lack of) care for women's reproductive health, it is very common for it to take years to diagnose women who do have it.</p>""", unsafe_allow_html=True)
-    # Display an image using a URL
+    st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
+    # Display uterus image
     image_url = "https://www.nishantivfcare.com/wp-content/uploads/2023/12/Nishant-Blog-Banner-9-min.jpg"
     st.image(image_url, use_column_width=True)
     # Source Information
@@ -379,11 +373,11 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     # Capture the output of df.info() in a string buffer
     buffer = io.StringIO()
     merged_df.info(buf=buffer)
-    info_str = buffer.getvalue()  # Get the string content of the buffer
+    info_str = buffer.getvalue()  
     # Display df.info() using Streamlit
     st.write("Variable information:")
-    st.text(info_str)  # Use st.text() for plain text display
-    # Display df.describe() directly using Streamlit
+    st.text(info_str)  
+    # Display df.describe()
     st.write(""" #### Summary Statistics for all variables:""")
     st.write(merged_df.describe())
     # The chunk of code above was sourced from ChatGPT 4o on 10/20/2024
@@ -410,20 +404,20 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     'Endometrium (mm)'
 ]
 
-# Define columns to log scale
+    # Define columns to log scale
     log_scale_cols = ['FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRG(ng/mL)']
 
-# Apply log scaling to the specified columns
+    # Apply log scaling to the specified columns
     merged_df[log_scale_cols] = merged_df[log_scale_cols].apply(lambda x: np.log1p(x))
 
-# Scale the remaining numeric columns using z-score
+    # Scale the remaining numeric columns using z-score
     remaining_cols = [col for col in true_numeric_cols if col not in log_scale_cols]
     df_scaled = merged_df[remaining_cols].apply(zscore)
 
-# Combine the log-scaled columns and z-score scaled columns
+    # Combine the log-scaled columns and z-score scaled columns
     df_scaled[log_scale_cols] = merged_df[log_scale_cols]
 
-# Non-scaled columns
+    # Non-scaled columns
     non_scaled_cols = [
     'Sl. No', 'Patient File No.', 'PCOS (Y/N)', 
     'Blood Group', 'Cycle(R/I)', 'Pregnant(Y/N)', 
@@ -433,7 +427,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     'Reg.Exercise(Y/N)'
 ]
 
-# Combine scaled and non-scaled columns to create final df
+    # Combine scaled and non-scaled columns to create final df
     df_final = pd.concat([df_scaled, merged_df[non_scaled_cols]], axis=1)
 
     # Visualize missing values after removal
@@ -594,7 +588,7 @@ if page == 'IDA/EDA: Fertility':
         plot_boxplots(fertility, "Fertility", numeric_columns)
 
 # Correlation Analysis revealed the following variables correlate with PCOS:
-# Age, AMH, Pregnant (Y/N), Weight Gain(Y/N), Hair Growth (Y/N), Skin Darkening (Y/N), Pimples (Y/N), BMI, Cycle length(days), Follicle No. (L), Follicle No. (R)
+# AMH, Weight Gain(Y/N), Hair Growth (Y/N), Skin Darkening (Y/N), Pimples (Y/N), BMI, Follicle No. (L), Follicle No. (R)
 # These variables will be used in further analysis.
 
 if page == 'Principal Component Analysis':
@@ -645,11 +639,11 @@ if page == 'Principal Component Analysis':
         # Display the plot in Streamlit
         st.plotly_chart(fig)
         # Show explained variance 
-        st.write("Explained (Default) Variance Percentages:")
+        st.write("Explained Variance Percentages:")
         bullet_points = "\n".join([f"- **{selected_features[i]}/PC{i + 1}**: {var:.2f}%" for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)])])
         st.markdown(bullet_points)
         
-    # Add a 3D PCA visualization
+    # Add 3D PCA visualization
     st.subheader("Interactive 3D PCA Plot")
     st.write("""I have also visualized the data in a 3D principal component space to explore clustering or patterns 
     associated with PCOS classification. Viewing the default 3D plot, it is clear that patients with PCOS are distinguishable from patients who do not have PCOS""")
@@ -683,7 +677,7 @@ if page == 'Principal Component Analysis':
             template="plotly_white"
         )
     
-        # Customize plot appearance
+        # Customize plot settings (axes, width, height)
         fig_3d.update_layout(
             scene=dict(
                 xaxis=dict(title=f"PC1 ({explained_variance[0]:.1f}%)"),
@@ -703,7 +697,6 @@ if page == 'Models':
     st.markdown("""<h1 style='color: pink;'><strong>Machine Learning Models That Can Predict PCOS Risk </h1>""", unsafe_allow_html=True)
     st.subheader("Exploring Different Models for Classification")
     st.write("""
-### Model Selection Summary:
 The table below includes the variables utilized in PCA, which showed strong correlations with PCOS. I have explored and trained the following models:
 
 - **Linear Regression**: Finds the linear relationship between variables to make predictions.
@@ -731,10 +724,10 @@ Furthermore, I have calculated the **precision** (% of true positive divided by 
     split_pct = 0.70
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1 - split_pct, random_state=42)
 
-    # Models
+    
     results = {}
 
-    ## Linear Regression
+    # Linear Regression
     lin_reg = LinearRegression()
     lin_reg.fit(X_train, y_train)
     y_pred_lin = lin_reg.predict(X_test)
@@ -742,7 +735,7 @@ Furthermore, I have calculated the **precision** (% of true positive divided by 
     r2_lin = r2_score(y_test, y_pred_lin)
     results['Linear Regression'] = {'accuracy': accuracy_lin, 'r2': r2_lin}
 
-    ## Logistic Regression
+    # Logistic Regression
     log_reg = LogisticRegression(max_iter=1000, random_state=42)
     log_reg.fit(X_train, y_train)
     y_pred_log = log_reg.predict(X_test)
@@ -750,7 +743,7 @@ Furthermore, I have calculated the **precision** (% of true positive divided by 
     r2_log = r2_score(y_test, y_pred_log)
     results['Logistic Regression'] = {'accuracy': accuracy_log, 'r2': r2_log}
 
-    ## LASSO Regression
+    # LASSO Regression
     lasso = Lasso(alpha=0.1, random_state=42)
     lasso.fit(X_train, y_train)
     y_pred_lasso = lasso.predict(X_test)
@@ -758,7 +751,7 @@ Furthermore, I have calculated the **precision** (% of true positive divided by 
     r2_lasso = r2_score(y_test, y_pred_lasso)
     results['LASSO Regression'] = {'accuracy': accuracy_lasso, 'r2': r2_lasso}
 
-    ## Support Vector Machines (SVM)
+    # Support Vector Machines (SVM)
     kernels = ['linear', 'rbf', 'poly', 'sigmoid']
     svm_metrics = {}
     for kernel in kernels:
@@ -776,7 +769,7 @@ Furthermore, I have calculated the **precision** (% of true positive divided by 
     best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
     best_svm_model.fit(X_train, y_train)
 
-    ## Naive Bayes
+    # Naive Bayes
     nb_model = GaussianNB()
     nb_model.fit(X_train, y_train)
     y_pred_nb = nb_model.predict(X_test)
@@ -784,7 +777,7 @@ Furthermore, I have calculated the **precision** (% of true positive divided by 
     r2_nb = r2_score(y_test, y_pred_nb)
     results['Naive Bayes'] = {'accuracy': accuracy_nb, 'r2': r2_nb}
 
-    # Display results
+    # Display results of each model (R2, mae, precision, recall, and f1)
     st.subheader("Model Comparisons:")
     for model, metrics in results.items():
         st.subheader(f"{model} Metrics:")
@@ -828,12 +821,11 @@ if page == 'Nomogram Risk Assessment':
         best_svm_model = st.session_state.best_svm_model
     else:
         st.write("Model not found. Please load or train the model first.")
-    # Description of the tool
     st.subheader("Adjust the following features to predict the risk of PCOS")
     st.write("""This nomogram allows you to adjust the values of different features, 
     and based on the selected `best_svm_model`, the risk of having PCOS will be calculated.""")
 
-    target_variable = 'PCOS (Y/N)'  # Replace with the actual name of your target variable
+    target_variable = 'PCOS (Y/N)' 
 
     # Exclude the target variable from the features list
     numeric_features = [feature for feature in features if feature != target_variable and len(final_model_data[feature].unique()) > 2]
@@ -850,12 +842,12 @@ if page == 'Nomogram Risk Assessment':
         max_val = resampled_data[feature].max()
         mean_val = resampled_data[feature].mean()
 
-        # Check that all values passed to the slider are float types (if they are not already)
+        # Check that all values passed to the slider are float types 
         min_val = float(min_val)
         max_val = float(max_val)
         mean_val = float(mean_val)
         
-        # Add the slider input for the user
+        # Add the slider input for the nomogram
         feature_inputs_unscaled[feature] = st.slider(
             f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
         )
@@ -866,7 +858,6 @@ if page == 'Nomogram Risk Assessment':
             f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
     
     # Calculate the risk based on the model
-
     risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, numeric_features)
     
     # Display the calculated risk as a percentage
