@@ -264,9 +264,6 @@ page = st.sidebar.radio("Go to", ["Home", "Data", 'IDA/EDA: Hormone', 'IDA/EDA: 
 
 # Home Page (default)
 if page == "Home":
-    # Display an image using a URL
-    image_url = "https://www.nishantivfcare.com/wp-content/uploads/2023/12/Nishant-Blog-Banner-9-min.jpg"
-    st.image(image_url, use_column_width=True)
     st.markdown("""<h1 style='color: pink;'><strong>RiskPCOS: A Polycystic Ovarian Syndrome (PCOS) Risk Assessment</h1>""", unsafe_allow_html=True)
     # Background Info
     st.markdown("""<p style="font-size:18px;">Polycystic Ovarian Syndrome, also known as PCOS, is a metabolic syndrome and hormonal condition that impacts the female reproductive system in women of reproductive age. PCOS directly impacts fertility by interfering with the growth and release of eggs from the ovaries. </p>""", unsafe_allow_html=True)
@@ -292,6 +289,9 @@ if page == "Home":
 
     """)
     st.markdown("""<p style="font-size:18px;"> According to the World Health Organization(WHO), it is estimated that this condition affects 8-13% of women among reproductive age; however, 70% of cases go undiagnosed. Given the (lack of) care for women's reproductive health, it is very common for it to take years to diagnose women who do have it.</p>""", unsafe_allow_html=True)
+    # Display an image using a URL
+    image_url = "https://www.nishantivfcare.com/wp-content/uploads/2023/12/Nishant-Blog-Banner-9-min.jpg"
+    st.image(image_url, use_column_width=True)
     # Source Information
     st.write("Source: [World Health Organization](https://www.who.int/news-room/fact-sheets/detail/polycystic-ovary-syndrome)")
     st.write(""" #### The RiskPCOS app aims to predict PCOS diagnosis among fertile and infertile women. Here's how:
