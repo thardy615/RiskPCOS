@@ -361,6 +361,8 @@ The clinical data for both the infertile and fertile datasets were collected acr
 - Avg. F size (R) (mm): follicular cysts on right ovary
 - Endometrium (mm): The tissue that lines the uterus. This organ thickens in preparation for pregnancy, and if a fertilized egg implants, the lining remains in place for the fetus. If pregnancy doesn't occur, the endometrium sheds during the menstrual cycle.
 
+**One limitation this data contains is a lack of information on androgen/male hormones, which includes DHEA, DHEAS, and Free/Bioavailable/Total Testosterone. I believe this could be because of the variability of these hormones throughout the (on average, 28 day) cycle, so the hospitals I have obtained the data from may not have been able to include this data due to inconsistent values and possibly, unreliability.**
+** Androgens are a diagnostic criteria for PCOS, so I believe obtaining this information in the future would greatly improve my prediction model.**
 Before any data manipulation, missingingness and class/sub-class sizes need to be accessed. Overall, the data only contained a few missing values (Missing Completely at Random aka MCAR), so simply removing them does not interfere with how the data is observed. However, about 1/3 of patients are classified to have PCOS while 2/3 of patients are not, so SMOTE is used to ensure equal class distribution between non-PCOS and PCOS patients. How I processed my data is broken down below.
 """, unsafe_allow_html=True)
 
