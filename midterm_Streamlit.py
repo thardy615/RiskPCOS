@@ -219,16 +219,39 @@ fertility_unscaled = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(da
 
 
 ### Variables that are correlated with PCOS
-true_numeric_cols = ['Age (yrs)', 'BMI', 'Cycle length(days)', 
-                     'AMH(ng/mL)', 'Follicle No. (L)', 'Follicle No. (R)']
+true_numeric_cols = ['BMI','Follicle No. (L)', 'Follicle No. (R)']
+# Define columns to log scale
+log_scale_cols = ['AMH(ng/mL)']
+
+# Apply log scaling to the specified columns
+resampled_data[log_scale_cols] = resampled_data[log_scale_cols].apply(lambda x: np.log1p(x))
+
+# Scale the remaining numeric columns using z-score
+remaining_cols = [col for col in true_numeric_cols if col not in log_scale_cols]
+data_scaled = resampled_data[remaining_cols].apply(zscore)
+
+# Combine the log-scaled columns and z-score scaled columns
+df_scaled[log_scale_cols] = resampled_data[log_scale_cols]
+
+# Non-scaled columns
+non_scaled_cols = [
+    'Sl. No', 'Patient File No.', 'PCOS (Y/N)', 
+    'Blood Group', 'Cycle(R/I)', 'Pregnant(Y/N)', 
+    'Weight gain(Y/N)', 'hair growth(Y/N)', 
+    'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
+    'Pimples(Y/N)', 'Fast food (Y/N)', 
+    'Reg.Exercise(Y/N)'
+]
+
+# Combine scaled and non-scaled columns to create final df
+# final_model_data = pd.concat([df_scaled, resampled_data[non_scaled_cols]], axis=1)
 
 # Scaling
-data_scaled = resampled_data[true_numeric_cols].apply(zscore)
-non_scaled_cols = ['hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
-                   'Pimples(Y/N)','Weight gain(Y/N)', 'Pregnant(Y/N)', 'PCOS (Y/N)']
+# data_scaled = resampled_data[true_numeric_cols].apply(zscore)
+non_scaled_cols = ['hair growth(Y/N)', 'Skin darkening (Y/N)', 'Pimples(Y/N)','Weight gain(Y/N)', 'PCOS (Y/N)']
 final_model_data = pd.concat([data_scaled, resampled_data[non_scaled_cols]], axis=1)
-features = ['Age (yrs)', 'BMI', 'Cycle length(days)', 'AMH(ng/mL)', 'Follicle No. (L)', 'Follicle No. (R)', 
-                   'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 'Pimples(Y/N)','Weight gain(Y/N)', 'Pregnant(Y/N)', 'PCOS (Y/N)']
+features = ['BMI', 'AMH(ng/mL)', 'Follicle No. (L)', 'Follicle No. (R)', 
+                   'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Pimples(Y/N)','Weight gain(Y/N)', 'PCOS (Y/N)']
     
 
 # Sidebar navigation
