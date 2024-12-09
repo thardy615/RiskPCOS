@@ -723,7 +723,6 @@ An R² of 0% means the model does not explain any of the variation in the respon
     st.image(image_url2, caption = "How to interpret a confusion matrix for a machine learning model", use_column_width=True)
     st.write("Displaying the data utilized in each model for reference:")
     st.write(final_model_data) # Display dataset for reference
-
     # Split the data into training and test data
     target = 'PCOS (Y/N)'
     X = final_model_data.drop(columns=[target])  # Features
@@ -740,7 +739,7 @@ An R² of 0% means the model does not explain any of the variation in the respon
     y_pred_lin = lin_reg.predict(X_test)
     accuracy_lin = accuracy_score(y_test, y_pred_lin.round())  # Round predictions
     r2_lin = r2_score(y_test, y_pred_lin)
-    results['Linear Regression'] = (accuracy_lin, r2_lin)
+    results['Linear Regression'] = {'accuracy': accuracy_lin, 'r2': r2_lin}
 
     ## Logistic Regression
     log_reg = LogisticRegression(max_iter=1000, random_state=42)
@@ -748,7 +747,7 @@ An R² of 0% means the model does not explain any of the variation in the respon
     y_pred_log = log_reg.predict(X_test)
     accuracy_log = accuracy_score(y_test, y_pred_log)
     r2_log = r2_score(y_test, y_pred_log)
-    results['Logistic Regression'] = (accuracy_log, r2_log)
+    results['Logistic Regression'] = {'accuracy': accuracy_log, 'r2': r2_log}
 
     ## LASSO Regression
     lasso = Lasso(alpha=0.1, random_state=42)
@@ -756,28 +755,24 @@ An R² of 0% means the model does not explain any of the variation in the respon
     y_pred_lasso = lasso.predict(X_test)
     accuracy_lasso = accuracy_score(y_test, y_pred_lasso.round())  # Round predictions
     r2_lasso = r2_score(y_test, y_pred_lasso)
-    results['LASSO Regression'] = (accuracy_lasso, r2_lasso)
+    results['LASSO Regression'] = {'accuracy': accuracy_lasso, 'r2': r2_lasso}
 
     ## Support Vector Machines (SVM)
     kernels = ['linear', 'rbf', 'poly', 'sigmoid']
-    svm_accuracies = {}
-    svm_r2_scores = {}
+    svm_metrics = {}
     for kernel in kernels:
         svm_model = SVC(kernel=kernel, random_state=42)
         svm_model.fit(X_train, y_train)
         y_pred_svm = svm_model.predict(X_test)
-        svm_accuracies[kernel] = accuracy_score(y_test, y_pred_svm)
-        svm_r2_scores[kernel] = r2_score(y_test, y_pred_svm)
+        svm_metrics[kernel] = {
+            'accuracy': accuracy_score(y_test, y_pred_svm),
+            'r2': r2_score(y_test, y_pred_svm)
+        }
 
-    best_svm_kernel = max(svm_accuracies, key=svm_accuracies.get)
-    results['SVM (Best Kernel)'] = (svm_accuracies[best_svm_kernel], svm_r2_scores[best_svm_kernel])
+    best_svm_kernel = max(svm_metrics, key=lambda k: svm_metrics[k]['accuracy'])
+    best_svm_metrics = svm_metrics[best_svm_kernel]
+    results['SVM (Best Kernel)'] = best_svm_metrics
     best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
-    if 'best_svm_model' not in st.session_state:
-        st.session_state.best_svm_model = best_svm_model
-        best_svm_model.fit(X_train, y_train)
-        st.write("Model has been trained and stored in session state.")
-    else:
-        print("Model already exists in session state.")
     best_svm_model.fit(X_train, y_train)
 
     ## Naive Bayes
@@ -786,11 +781,11 @@ An R² of 0% means the model does not explain any of the variation in the respon
     y_pred_nb = nb_model.predict(X_test)
     accuracy_nb = accuracy_score(y_test, y_pred_nb)
     r2_nb = r2_score(y_test, y_pred_nb)
-    results['Naive Bayes'] = (accuracy_nb, r2_nb)
+    results['Naive Bayes'] = {'accuracy': accuracy_nb, 'r2': r2_nb}
 
     # Display results
     st.subheader("Model Comparisons:")
-    for model, acc in results.items():
+    for model, metrics in results.items():
         st.subheader(f"{model} Metrics:")
     
         # Generate predictions for the corresponding model
@@ -805,20 +800,16 @@ An R² of 0% means the model does not explain any of the variation in the respon
             st.write(f"Best SVM Kernel: {best_svm_kernel}")
         elif model == "Naive Bayes":
             y_pred = nb_model.predict(X_test)
-            
-        try:
-            acc_float = float(acc)
-        except ValueError:
-            acc_float = 0.0
-            
-        # Calculate metrics
+
+        # Calculate additional metrics
         mae = mean_absolute_error(y_test, y_pred)
         precision = precision_score(y_test, y_pred, zero_division=1)
         recall = recall_score(y_test, y_pred, zero_division=1)
         f1 = f1_score(y_test, y_pred, zero_division=1)
 
         # Display metrics
-        st.write(f"- **Accuracy**: {acc_float:.2f}")
+        st.write(f"- **Accuracy**: {metrics['accuracy']:.2f}")
+        st.write(f"- **R² Score**: {metrics['r2']:.2f}")
         st.write(f"- **Mean Absolute Error (MAE)**: {mae:.2f}")
         st.write(f"- **Precision**: {precision:.2f}")
         st.write(f"- **Recall**: {recall:.2f}")
@@ -826,11 +817,118 @@ An R² of 0% means the model does not explain any of the variation in the respon
 
         # Plot the confusion matrix
         fig, ax = plt.subplots(figsize=(1.75, 1.75))
-        ConfusionMatrixDisplay.from_predictions(
-        y_test, y_pred, ax=ax, cmap="Blues", colorbar=False
-    )
+        ConfusionMatrixDisplay.from_predictions(y_test, y_pred, ax=ax, cmap="Blues", colorbar=False)
         ax.set_title(f"Confusion Matrix: {model}")
         st.pyplot(fig)
+
+    # # Split the data into training and test data
+    # target = 'PCOS (Y/N)'
+    # X = final_model_data.drop(columns=[target])  # Features
+    # y = final_model_data[target].astype(int)     # Target (binary)
+    # split_pct = 0.70
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1 - split_pct, random_state=42)
+
+    # # Models
+    # results = {}
+
+    # ## Linear Regression
+    # lin_reg = LinearRegression()
+    # lin_reg.fit(X_train, y_train)
+    # y_pred_lin = lin_reg.predict(X_test)
+    # accuracy_lin = accuracy_score(y_test, y_pred_lin.round())  # Round predictions
+    # r2_lin = r2_score(y_test, y_pred_lin)
+    # results['Linear Regression'] = (accuracy_lin, r2_lin)
+
+    # ## Logistic Regression
+    # log_reg = LogisticRegression(max_iter=1000, random_state=42)
+    # log_reg.fit(X_train, y_train)
+    # y_pred_log = log_reg.predict(X_test)
+    # accuracy_log = accuracy_score(y_test, y_pred_log)
+    # r2_log = r2_score(y_test, y_pred_log)
+    # results['Logistic Regression'] = (accuracy_log, r2_log)
+
+    # ## LASSO Regression
+    # lasso = Lasso(alpha=0.1, random_state=42)
+    # lasso.fit(X_train, y_train)
+    # y_pred_lasso = lasso.predict(X_test)
+    # accuracy_lasso = accuracy_score(y_test, y_pred_lasso.round())  # Round predictions
+    # r2_lasso = r2_score(y_test, y_pred_lasso)
+    # results['LASSO Regression'] = (accuracy_lasso, r2_lasso)
+
+    # ## Support Vector Machines (SVM)
+    # kernels = ['linear', 'rbf', 'poly', 'sigmoid']
+    # svm_accuracies = {}
+    # svm_r2_scores = {}
+    # for kernel in kernels:
+    #     svm_model = SVC(kernel=kernel, random_state=42)
+    #     svm_model.fit(X_train, y_train)
+    #     y_pred_svm = svm_model.predict(X_test)
+    #     svm_accuracies[kernel] = accuracy_score(y_test, y_pred_svm)
+    #     svm_r2_scores[kernel] = r2_score(y_test, y_pred_svm)
+
+    # best_svm_kernel = max(svm_accuracies, key=svm_accuracies.get)
+    # results['SVM (Best Kernel)'] = (svm_accuracies[best_svm_kernel], svm_r2_scores[best_svm_kernel])
+    # best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
+    # if 'best_svm_model' not in st.session_state:
+    #     st.session_state.best_svm_model = best_svm_model
+    #     best_svm_model.fit(X_train, y_train)
+    #     st.write("Model has been trained and stored in session state.")
+    # else:
+    #     print("Model already exists in session state.")
+    # best_svm_model.fit(X_train, y_train)
+
+    # ## Naive Bayes
+    # nb_model = GaussianNB()
+    # nb_model.fit(X_train, y_train)
+    # y_pred_nb = nb_model.predict(X_test)
+    # accuracy_nb = accuracy_score(y_test, y_pred_nb)
+    # r2_nb = r2_score(y_test, y_pred_nb)
+    # results['Naive Bayes'] = (accuracy_nb, r2_nb)
+
+    # # Display results
+    # st.subheader("Model Comparisons:")
+    # for model, acc in results.items():
+    #     st.subheader(f"{model} Metrics:")
+    
+    #     # Generate predictions for the corresponding model
+    #     if model == "Linear Regression":
+    #         y_pred = lin_reg.predict(X_test).round()
+    #     elif model == "Logistic Regression":
+    #         y_pred = log_reg.predict(X_test)
+    #     elif model == "LASSO Regression":
+    #         y_pred = lasso.predict(X_test).round()
+    #     elif model.startswith("SVM"):
+    #         y_pred = best_svm_model.predict(X_test)
+    #         st.write(f"Best SVM Kernel: {best_svm_kernel}")
+    #     elif model == "Naive Bayes":
+    #         y_pred = nb_model.predict(X_test)
+            
+    #     try:
+    #         acc_float = float(acc)
+    #     except ValueError:
+    #         acc_float = 0.0
+            
+    #     # Calculate metrics
+    #     mae = mean_absolute_error(y_test, y_pred)
+    #     precision = precision_score(y_test, y_pred, zero_division=1)
+    #     recall = recall_score(y_test, y_pred, zero_division=1)
+    #     f1 = f1_score(y_test, y_pred, zero_division=1)
+
+    #     # Display metrics
+    #     st.write(f"- **Accuracy**: {acc_float:.2f}")
+    #     st.write(f"- **Mean Absolute Error (MAE)**: {mae:.2f}")
+    #     st.write(f"- **Precision**: {precision:.2f}")
+    #     st.write(f"- **Recall**: {recall:.2f}")
+    #     st.write(f"- **F1-Score**: {f1:.2f}")
+
+    #     # Plot the confusion matrix
+    #     fig, ax = plt.subplots(figsize=(1.75, 1.75))
+    #     ConfusionMatrixDisplay.from_predictions(
+    #     y_test, y_pred, ax=ax, cmap="Blues", colorbar=False
+    # )
+    #     ax.set_title(f"Confusion Matrix: {model}")
+    #     st.pyplot(fig)
+
     
 if page == 'Nomogram Risk Assessment':
     st.markdown("""<h1 style='color: pink;'><strong> Interactive Nomogram for PCOS Risk Prediction </h1>""", unsafe_allow_html=True)
