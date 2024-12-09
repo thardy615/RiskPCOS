@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, mean_absolute_error, ConfusionMatrixDisplay, r2_score
 from sklearn.linear_model import Lasso
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import r2_score
@@ -790,8 +790,8 @@ An R² of 0% means the model does not explain any of the variation in the respon
 
     # Display results
     st.subheader("Model Comparisons:")
-    for model, (acc, r2) in results.items():
-        st.subheader(f"{model} Accuracy: {acc:.2f}, R²: {r2:.2f}")
+    for model, acc in results.items():
+        st.subheader(f"{model} Metrics:")
     
         # Generate predictions for the corresponding model
         if model == "Linear Regression":
@@ -805,6 +805,19 @@ An R² of 0% means the model does not explain any of the variation in the respon
             st.write(f"Best SVM Kernel: {best_svm_kernel}")
         elif model == "Naive Bayes":
             y_pred = nb_model.predict(X_test)
+
+        # Calculate metrics
+        mae = mean_absolute_error(y_test, y_pred)
+        precision = precision_score(y_test, y_pred, zero_division=1)
+        recall = recall_score(y_test, y_pred, zero_division=1)
+        f1 = f1_score(y_test, y_pred, zero_division=1)
+
+        # Display metrics
+        st.write(f"- **Accuracy**: {acc:.2f}")
+        st.write(f"- **Mean Absolute Error (MAE)**: {mae:.2f}")
+        st.write(f"- **Precision**: {precision:.2f}")
+        st.write(f"- **Recall**: {recall:.2f}")
+        st.write(f"- **F1-Score**: {f1:.2f}")
 
         # Plot the confusion matrix
         fig, ax = plt.subplots(figsize=(1.75, 1.75))
