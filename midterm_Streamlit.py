@@ -609,7 +609,7 @@ if page == 'Principal Component Analysis':
         features, 
         default=features[:-1]  # Removes the last feature ('PCOS (Y/N)') from the default selection
     )
-    
+    color_by = st.sidebar.selectbox("Color by:", ['PCOS (Y/N)'])
 
     # Ensure features are selected
     if len(selected_features) < 2:
