@@ -361,7 +361,7 @@ if page == "Home":
     - Generate and evaluate multiple models/algorithms to determine which would be best for predicting PCOS (page `Models`).
     - Utilize the most accurate model in a nomogram, allowing viewers to vary variables to access PCOS risk (page `Nomogram`).""")
     
-    st.markdown(""" <div style="color: black;"> Please venture through side bar options (in order or appearance) to learn more about the data used to assess PCOS risk. </div>""", unsafe_allow_html=True)
+    st.markdown(""" <div style="color: black;"> Please venture through side bar options (in order of appearance) to learn more about the data used to assess PCOS risk. </div>""", unsafe_allow_html=True)
 # Disclaimer
     st.markdown(""" <br><br><div style="color: red;"> **Disclaimer:** I am not a medical practitioner, so neither I nor this app can officially diagnose anyone with Polycystic Ovarian Syndrome. This app is useful for risk assessment only. Viewers who may consider themselves at risk can gather their findings and take them to their primary care physician, OB/GYN, or endocrinologist to retrieve an actual diagnosis and thus (hopefully) receive treatment. For more information about PCOS, please visit the WHO link above or investigate other reliable online sources, but it is recommended to speak to a medical provider. </div>
 """, unsafe_allow_html=True)
