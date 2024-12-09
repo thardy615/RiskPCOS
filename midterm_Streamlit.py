@@ -490,11 +490,9 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
 
     st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
 
-
-if 'all_variables_scaled' in st.session_state:
-    all_variables_scaled = st.session_state.all_variables_scaled
-else:
-    st.write("To retrieve scaled data, go to Data page before viewing IDA/EDA")
+all_variables_scaled = st.session_state.all_variables_scaled
+# else:
+#     st.write("To retrieve scaled data, go to Data page before viewing IDA/EDA")
 # Create subsets for visualizations for each page
 hormone = all_variables_scaled[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
  'PRG(ng/mL)', 'Pregnant(Y/N)']]
