@@ -952,23 +952,6 @@ if page == 'Nomogram Risk Assessment':
         # Ensure slider values are floats
         min_val, max_val, mean_val = map(float, (min_val, max_val, mean_val))
 
-        # if feature in log_scale_cols:
-        #     # Slider for log-scale features
-        #     min_val = resampled_data[feature].min()
-        #     max_val = resampled_data[feature].max()
-        #     mean_val = resampled_data[feature].mean()
-
-        #     # Ensure slider values are floats
-        #     min_val, max_val, mean_val = map(float, (min_val, max_val, mean_val))
-        #     feature_inputs_unscaled[feature] = st.slider(
-        #         f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
-        #     )
-            # slider_val = st.slider(
-            # f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
-            # )
-            # # Transform back to original scale
-            # feature_inputs_unscaled[feature] = np.expm1(slider_val) if feature in log_scale_cols else slider_val
-        #else:
         # Slider for standard numeric features
         feature_inputs_unscaled[feature] = st.slider(
             f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
@@ -982,7 +965,7 @@ if page == 'Nomogram Risk Assessment':
         )
 
     # Calculate the risk
-    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, remaining_cols, log_scale_cols)
+    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, true_numeric_cols, log_scale_cols)
 
     # Display the risk
     st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
