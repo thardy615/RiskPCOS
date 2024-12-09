@@ -264,6 +264,9 @@ if page == "Home":
     st.markdown("""<h1 style='color: pink;'><strong>RiskPCOS: A Polycystic Ovarian Syndrome (PCOS) Risk Assessment</h1>""", unsafe_allow_html=True)
     # Background Info
     st.markdown("""<p style="font-size:18px;">Polycystic Ovarian Syndrome, also known as PCOS, is a metabolic syndrome and hormonal condition that impacts the female reproductive system in women of reproductive age. PCOS directly impacts fertility by interfering with the growth and release of eggs from the ovaries. </p>""", unsafe_allow_html=True)
+    # Display an image using a URL
+    image_url = "https://www.nishantivfcare.com/wp-content/uploads/2023/12/Nishant-Blog-Banner-9-min.jpg"
+    st.image(image_url, caption="Uterus Flower", use_column_width=True)
     st.write(""" #### Although every woman's experience differs, symptoms include:
     
     - **irregular periods**
