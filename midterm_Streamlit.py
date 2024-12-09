@@ -105,7 +105,7 @@ def plot_correlations(subset, title):
     st.subheader(f"{title} Correlation with PCOS (Y/N)") # title
     pc_correlations = corr_matrix['PCOS (Y/N)'] # pcos class correlations
     for variable, value in pc_correlations.items(): # for each variable and it's respective correlation value with PCOS
-        if variable != 'PCOS (Y/N)' and (value > 0.2 or value < -0.1): # If the correlation is < -0.1 but > 0.2,
+        if variable != 'PCOS (Y/N)' and (value > 0.2 or value < -0.2): # If the correlation is < -0.2 but > 0.2,
             st.write(f"{variable}: {value:.2f}") # Print the variable and its correlation with PCOS
 
     # Display correlations between other variables (excluding PCOS correlations)
@@ -113,8 +113,8 @@ def plot_correlations(subset, title):
     correlation_results = []
     for i in range(len(corr_matrix.columns)):
         for j in range(i):
-            if (corr_matrix.iloc[i, j] > 0.2 or corr_matrix.iloc[i, j] < -0.1) and \
-                    (corr_matrix.columns[i] != 'PCOS (Y/N)' and corr_matrix.columns[j] != 'PCOS (Y/N)'): # If the correlation is < -0.1 but > 0.2 and if the variable of said correlation is not PCOS
+            if (corr_matrix.iloc[i, j] > 0.2 or corr_matrix.iloc[i, j] < -0.2) and \
+                    (corr_matrix.columns[i] != 'PCOS (Y/N)' and corr_matrix.columns[j] != 'PCOS (Y/N)'): # If the correlation is < -0.2 but > 0.2 and if the variable of said correlation is not PCOS
                 correlation_results.append(f"{corr_matrix.columns[i]} and {corr_matrix.columns[j]}: {corr_matrix.iloc[i, j]:.2f}") # Print the variable and its correlation with another
     # Display correlation results in app
     for result in correlation_results:
