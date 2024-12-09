@@ -131,6 +131,7 @@ def plot_correlations(subset, title):
 # Histogram Plots    
 def plot_distributions(subset, title, numeric_columns, categorical_columns):
     # Plot numeric columns as interactive histograms with rug plots
+    st.write("Note: Utilizes unscaled data")
     for col in numeric_columns: # for each numeric column
         if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty: # For columns in subset, excluding target
             # Create histograms for Non-PCOS and PCOS
@@ -153,6 +154,7 @@ def plot_distributions(subset, title, numeric_columns, categorical_columns):
 # Box Plots
 def plot_boxplots(subset, title, numeric_columns):
     # Plot numeric columns as interactive box plots
+    st.write("Note: Utilizes unscaled data")
     for col in numeric_columns: # for each numeric column
         if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty: # For columns in subset, excluding target
             # Create box plot for the current numeric column
@@ -204,16 +206,17 @@ if 'resampled_data' not in st.session_state:
     st.session_state.resampled_data = prepare_resampled_data()
     
 # Create subsets for visualizations for each page
-hormone = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
+hormone_unscaled = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
  'PRG(ng/mL)', 'Pregnant(Y/N)']]
-qualityOfLife = resampled_data[['Age (yrs)','PCOS (Y/N)',
+qualityOfLife_unscaled = resampled_data[['Age (yrs)','PCOS (Y/N)',
  'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
                    'Pimples(Y/N)', 'Reg.Exercise(Y/N)']]
-metabolic = resampled_data[['Age (yrs)','PCOS (Y/N)', 'BMI', 'Waist:Hip Ratio', 'RBS(mg/dl)',
+metabolic_unscaled = resampled_data[['Age (yrs)','PCOS (Y/N)', 'BMI', 'Waist:Hip Ratio', 'RBS(mg/dl)',
 'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)', 'Pregnant(Y/N)', 'Reg.Exercise(Y/N)', 'Weight gain(Y/N)', 'Skin darkening (Y/N)']]
-fertility = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(days)', 
+fertility_unscaled = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(days)', 
 'Follicle No. (L)', 'Follicle No. (R)', 'Avg. F size (L) (mm)', 
                     'Avg. F size (R) (mm)', 'Endometrium (mm)', 'Pregnant(Y/N)', ]]
+
 
 ### Variables that are correlated with PCOS
 true_numeric_cols = ['Age (yrs)', 'BMI', 'Cycle length(days)', 
@@ -427,6 +430,9 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     X_resampled, y_resampled = smote.fit_resample(X, y)
     resampled_data = pd.DataFrame(X_resampled, columns=X.columns)
     resampled_data['PCOS (Y/N)'] = y_resampled
+    all_variables_scaled = resampled_data
+    st.session_state.all_variables_scaled = all_variables_scaled
+    
 
     # Display class distribution after SMOTE
     st.write("Class distribution after SMOTE:")
@@ -448,6 +454,22 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
 
     st.markdown("<br>", unsafe_allow_html=True)  # Add another break for spacing
 
+
+if 'all_variables_scaled' in st.session_state:
+    all_variables_scaled = st.session_state.all_variables_scaled
+else:
+    st.write("To retrieve scaled data, go to Data page before viewing IDA/EDA")
+# Create subsets for visualizations for each page
+hormone = all_variables_scaled[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
+ 'PRG(ng/mL)', 'Pregnant(Y/N)']]
+qualityOfLife = all_variables_scaled[['Age (yrs)','PCOS (Y/N)',
+ 'Pregnant(Y/N)', 'Weight gain(Y/N)', 'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
+                   'Pimples(Y/N)', 'Reg.Exercise(Y/N)']]
+metabolic = all_variables_scaled[['Age (yrs)','PCOS (Y/N)', 'BMI', 'Waist:Hip Ratio', 'RBS(mg/dl)',
+'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)', 'Pregnant(Y/N)', 'Reg.Exercise(Y/N)', 'Weight gain(Y/N)', 'Skin darkening (Y/N)']]
+fertility = all_variables_scaled[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(days)', 
+'Follicle No. (L)', 'Follicle No. (R)', 'Avg. F size (L) (mm)', 
+                    'Avg. F size (R) (mm)', 'Endometrium (mm)', 'Pregnant(Y/N)', ]]
 if page == 'IDA/EDA: Hormone':
     st.markdown("""<h1 style='color: pink;'><strong>Hormone Variables' IDA/EDA </h1>""", unsafe_allow_html=True)
     # Footer about data
@@ -459,7 +481,7 @@ if page == 'IDA/EDA: Hormone':
                            'PRL(ng/mL)', 'PRG(ng/mL)']
     categorical_columns = ['Pregnant(Y/N)']
     if st.button('Show Distributions'):
-        plot_distributions(hormone, "Hormone", numeric_columns, categorical_columns)
+        plot_distributions(hormone_unscaled, "Hormone", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(hormone, "Hormone")
     if st.button('Show Boxplots'):
@@ -478,7 +500,7 @@ if page == 'IDA/EDA: Quality of Life':
                                'hair growth(Y/N)', 'Skin darkening (Y/N)', 
                                'Hair loss(Y/N)', 'Pimples(Y/N)', 'Reg.Exercise(Y/N)']
     if st.button('Show Distributions'):
-        plot_distributions(qualityOfLife, "Quality of Life", numeric_columns, categorical_columns)
+        plot_distributions(qualityOfLife_unscaled, "Quality of Life", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(qualityOfLife, "Quality of Life")
     st.markdown(""" <br><br><div style="color: red;"> No numeric columns, so no boxplots </div>
@@ -517,7 +539,7 @@ if page == 'IDA/EDA: Fertility':
                            'Avg. F size (R) (mm)', 'Endometrium (mm)']
     categorical_columns = ['Pregnant(Y/N)']
     if st.button('Show Distributions'):
-        plot_distributions(fertility, "Fertility", numeric_columns, categorical_columns)
+        plot_distributions(fertility_unscaled, "Fertility", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(fertility, "Fertility")
     if st.button('Show Boxplots'):
