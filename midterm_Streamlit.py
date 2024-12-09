@@ -18,6 +18,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.linear_model import Lasso
 from sklearn.metrics import ConfusionMatrixDisplay
+from sklearn.metrics import r2_score
 import joblib
 
 ### Creating functions ###
@@ -743,8 +744,13 @@ The table below includes the variables utilized in PCA, which showed strong corr
 - **Naive Bayes**: An algorithm that assumes that all features are completely independent of each other when predicting the target.
 
 The model with the **best accuracy** is the **SVM model** using the **rbf (Radial Basis Function)** kernel.
+
+To interpet the model performance, I have generated a confusion matrix (comparing its predicted labels to the actual labels) for each model.
 """)
-    st.write(final_model_data)  # Display dataset for reference
+    # Display an image using a URL
+    image_url2 = "https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c42677529a0f4e97e4f96_644aea65cefe35380f198a5a_class_guide_cm08.png"
+    st.image(image_url2, caption = "How to interpret a confusion matrix for a machine learning model", use_column_width=True)
+    st.write(f"Displaying the data utilized in each model for reference: {final_model_data}")  # Display dataset for reference
 
     # Split the data into training and test data
     target = 'PCOS (Y/N)'
@@ -760,31 +766,39 @@ The model with the **best accuracy** is the **SVM model** using the **rbf (Radia
     lin_reg = LinearRegression()
     lin_reg.fit(X_train, y_train)
     y_pred_lin = lin_reg.predict(X_test)
-    results['Linear Regression'] = accuracy_score(y_test, y_pred_lin.round())  # Round predictions
+    accuracy_lin = accuracy_score(y_test, y_pred_lin.round())  # Round predictions
+    r2_lin = r2_score(y_test, y_pred_lin)
+    results['Linear Regression'] = (accuracy_lin, r2_lin)
 
     ## Logistic Regression
     log_reg = LogisticRegression(max_iter=1000, random_state=42)
     log_reg.fit(X_train, y_train)
     y_pred_log = log_reg.predict(X_test)
-    results['Logistic Regression'] = accuracy_score(y_test, y_pred_log)
+    accuracy_log = accuracy_score(y_test, y_pred_log)
+    r2_log = r2_score(y_test, y_pred_log)
+    results['Logistic Regression'] = (accuracy_log, r2_log)
 
     ## LASSO Regression
     lasso = Lasso(alpha=0.1, random_state=42)
     lasso.fit(X_train, y_train)
     y_pred_lasso = lasso.predict(X_test)
-    results['LASSO Regression'] = accuracy_score(y_test, y_pred_lasso.round())  # Round predictions
+    accuracy_lasso = accuracy_score(y_test, y_pred_lasso.round())  # Round predictions
+    r2_lasso = r2_score(y_test, y_pred_lasso)
+    results['LASSO Regression'] = (accuracy_lasso, r2_lasso)
 
     ## Support Vector Machines (SVM)
     kernels = ['linear', 'rbf', 'poly', 'sigmoid']
     svm_accuracies = {}
+    svm_r2_scores = {}
     for kernel in kernels:
         svm_model = SVC(kernel=kernel, random_state=42)
         svm_model.fit(X_train, y_train)
         y_pred_svm = svm_model.predict(X_test)
         svm_accuracies[kernel] = accuracy_score(y_test, y_pred_svm)
+        svm_r2_scores[kernel] = r2_score(y_test, y_pred_svm)
 
     best_svm_kernel = max(svm_accuracies, key=svm_accuracies.get)
-    results['SVM (Best Kernel)'] = svm_accuracies[best_svm_kernel]
+    results['SVM (Best Kernel)'] = (svm_accuracies[best_svm_kernel], svm_r2_scores[best_svm_kernel])
     best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
     if 'best_svm_model' not in st.session_state:
         st.session_state.best_svm_model = best_svm_model
@@ -793,17 +807,20 @@ The model with the **best accuracy** is the **SVM model** using the **rbf (Radia
     else:
         print("Model already exists in session state.")
     best_svm_model.fit(X_train, y_train)
-    
+
     ## Naive Bayes
     nb_model = GaussianNB()
     nb_model.fit(X_train, y_train)
     y_pred_nb = nb_model.predict(X_test)
-    results['Naive Bayes'] = accuracy_score(y_test, y_pred_nb)
+    accuracy_nb = accuracy_score(y_test, y_pred_nb)
+    r2_nb = r2_score(y_test, y_pred_nb)
+    results['Naive Bayes'] = (accuracy_nb, r2_nb)
 
     # Display results
     st.subheader("Model Comparisons:")
-    for model, acc in results.items():
-        st.subheader(f"{model} Accuracy: {acc:.2f}")
+    for model, (acc, r2) in results.items():
+        st.subheader(f"{model} Accuracy: {acc:.2f}, R²: {r2:.2f}")
+    
         # Generate predictions for the corresponding model
         if model == "Linear Regression":
             y_pred = lin_reg.predict(X_test).round()
@@ -812,7 +829,7 @@ The model with the **best accuracy** is the **SVM model** using the **rbf (Radia
         elif model == "LASSO Regression":
             y_pred = lasso.predict(X_test).round()
         elif model.startswith("SVM"):
-            y_pred = best_svm_model.predict(X_test) 
+            y_pred = best_svm_model.predict(X_test)
             st.write(f"Best SVM Kernel: {best_svm_kernel}")
         elif model == "Naive Bayes":
             y_pred = nb_model.predict(X_test)
@@ -820,10 +837,81 @@ The model with the **best accuracy** is the **SVM model** using the **rbf (Radia
         # Plot the confusion matrix
         fig, ax = plt.subplots(figsize=(1.75, 1.75))
         ConfusionMatrixDisplay.from_predictions(
-            y_test, y_pred, ax=ax, cmap="Blues", colorbar=False
-        )
+        y_test, y_pred, ax=ax, cmap="Blues", colorbar=False
+    )
         ax.set_title(f"Confusion Matrix: {model}")
         st.pyplot(fig)
+    # # Models
+    # results = {}
+
+    # ## Linear Regression
+    # lin_reg = LinearRegression()
+    # lin_reg.fit(X_train, y_train)
+    # y_pred_lin = lin_reg.predict(X_test)
+    # results['Linear Regression'] = accuracy_score(y_test, y_pred_lin.round())  # Round predictions
+
+    # ## Logistic Regression
+    # log_reg = LogisticRegression(max_iter=1000, random_state=42)
+    # log_reg.fit(X_train, y_train)
+    # y_pred_log = log_reg.predict(X_test)
+    # results['Logistic Regression'] = accuracy_score(y_test, y_pred_log)
+
+    # ## LASSO Regression
+    # lasso = Lasso(alpha=0.1, random_state=42)
+    # lasso.fit(X_train, y_train)
+    # y_pred_lasso = lasso.predict(X_test)
+    # results['LASSO Regression'] = accuracy_score(y_test, y_pred_lasso.round())  # Round predictions
+
+    # ## Support Vector Machines (SVM)
+    # kernels = ['linear', 'rbf', 'poly', 'sigmoid']
+    # svm_accuracies = {}
+    # for kernel in kernels:
+    #     svm_model = SVC(kernel=kernel, random_state=42)
+    #     svm_model.fit(X_train, y_train)
+    #     y_pred_svm = svm_model.predict(X_test)
+    #     svm_accuracies[kernel] = accuracy_score(y_test, y_pred_svm)
+
+    # best_svm_kernel = max(svm_accuracies, key=svm_accuracies.get)
+    # results['SVM (Best Kernel)'] = svm_accuracies[best_svm_kernel]
+    # best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
+    # if 'best_svm_model' not in st.session_state:
+    #     st.session_state.best_svm_model = best_svm_model
+    #     best_svm_model.fit(X_train, y_train)
+    #     st.write("Model has been trained and stored in session state.")
+    # else:
+    #     print("Model already exists in session state.")
+    # best_svm_model.fit(X_train, y_train)
+    
+    # ## Naive Bayes
+    # nb_model = GaussianNB()
+    # nb_model.fit(X_train, y_train)
+    # y_pred_nb = nb_model.predict(X_test)
+    # results['Naive Bayes'] = accuracy_score(y_test, y_pred_nb)
+
+    # # Display results
+    # st.subheader("Model Comparisons:")
+    # for model, acc in results.items():
+    #     st.subheader(f"{model} Accuracy: {acc:.2f}")
+    #     # Generate predictions for the corresponding model
+    #     if model == "Linear Regression":
+    #         y_pred = lin_reg.predict(X_test).round()
+    #     elif model == "Logistic Regression":
+    #         y_pred = log_reg.predict(X_test)
+    #     elif model == "LASSO Regression":
+    #         y_pred = lasso.predict(X_test).round()
+    #     elif model.startswith("SVM"):
+    #         y_pred = best_svm_model.predict(X_test) 
+    #         st.write(f"Best SVM Kernel: {best_svm_kernel}")
+    #     elif model == "Naive Bayes":
+    #         y_pred = nb_model.predict(X_test)
+
+    #     # Plot the confusion matrix
+    #     fig, ax = plt.subplots(figsize=(1.75, 1.75))
+    #     ConfusionMatrixDisplay.from_predictions(
+    #         y_test, y_pred, ax=ax, cmap="Blues", colorbar=False
+    #     )
+    #     ax.set_title(f"Confusion Matrix: {model}")
+    #     st.pyplot(fig)
     
     
 if page == 'Nomogram Risk Assessment':
