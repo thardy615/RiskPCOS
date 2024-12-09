@@ -710,7 +710,7 @@ The model with the **best accuracy** is the **SVM model** using the **rbf (Radia
 
 To interpet the model performance, I have generated a confusion matrix (comparing its predicted labels to the actual labels) for each model. Additionally, I have included the R² value for each model. R² evaluates the goodness of fit by calculating the variance explained by the model divided by the total variance.
 An R² of 0% means the model does not explain any of the variation in the response variables around their respective means, meanwhile 100% means that all variation is explained. Keep in mind, it is possible for a good model to have a low R², and it is possible for a biased/unfit model to have a high R².
-Furthermore, I have calculated the **precision** (% of true positive divided by all actually positive), **recall** (% of true positive divided by all predicted positive), **F1 score** ((2*Precision*Recall)/(Precision + Recall)), and **Mean Absolute Error/MAE**(the average magnitude of the absolute errors between the predicted and actual values).
+Furthermore, I have calculated the **precision** (% of true positive divided by all actually positive), **recall** (% of true positive divided by all predicted positive), **F1 score** ((2 x Precision x Recall)/(Precision + Recall)), and **Mean Absolute Error/MAE**(the average magnitude of the absolute errors between the predicted and actual values).
 """)
     # Display an image using a URL
     image_url2 = "https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c42677529a0f4e97e4f96_644aea65cefe35380f198a5a_class_guide_cm08.png"
