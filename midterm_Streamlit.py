@@ -416,7 +416,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
 
 # Scale the remaining numeric columns using z-score
     remaining_cols = [col for col in true_numeric_cols if col not in log_scale_cols]
-df_scaled = merged_df[remaining_cols].apply(zscore)
+    df_scaled = merged_df[remaining_cols].apply(zscore)
 
 # Combine the log-scaled columns and z-score scaled columns
     df_scaled[log_scale_cols] = merged_df[log_scale_cols]
