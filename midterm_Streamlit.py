@@ -349,6 +349,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     st.write("Variable information:")
     st.text(info_str)  # Use st.text() for plain text display
     # Display df.describe() directly using Streamlit
+    st.write(""" #### Summary Statistics for all variables:""")
     st.write(merged_df.describe())
     # The chunk of code above was sourced from ChatGPT 4o on 10/20/2024
 
