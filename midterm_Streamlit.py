@@ -242,6 +242,7 @@ st.session_state.resampled_data = prepare_resampled_data()
 
 # if 'resampled_data' not in st.session_state:
 #     st.session_state.resampled_data = prepare_resampled_data()
+
     
 # Create subsets for visualizations for each page
 hormone_unscaled = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
@@ -255,6 +256,63 @@ fertility_unscaled = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'Cycle length(da
 'Follicle No. (L)', 'Follicle No. (R)', 'Avg. F size (L) (mm)', 
                     'Avg. F size (R) (mm)', 'Endometrium (mm)', 'Pregnant(Y/N)', ]]
 
+# Define numeric columns to scale
+true_numeric_cols = [
+    'Age (yrs)', 'Weight (Kg)', 'Height(Cm)', 'BMI', 
+    'Pulse rate(bpm)', 'RR (breaths/min)', 'Hb(g/dl)', 
+    'Cycle length(days)', 'Marraige Status (Yrs)', 
+    'No. of aborptions', 'I   beta-HCG(mIU/mL)', 
+    'II    beta-HCG(mIU/mL)', 'FSH(mIU/mL)', 'LH(mIU/mL)', 
+    'FSH/LH', 'Hip(inch)', 'Waist(inch)', 'Waist:Hip Ratio', 
+    'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
+    'Vit D3 (ng/mL)', 'PRG(ng/mL)', 'RBS(mg/dl)',
+    'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)', 
+    'Follicle No. (L)', 'Follicle No. (R)', 
+    'Avg. F size (L) (mm)', 'Avg. F size (R) (mm)', 
+    'Endometrium (mm)'
+]
+
+    # Define columns to log scale
+log_scale_cols = ['FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRG(ng/mL)']
+
+    # Apply log scaling to the specified columns
+merged_df[log_scale_cols] = merged_df[log_scale_cols].apply(lambda x: np.log1p(x))
+
+    # Scale the remaining numeric columns using z-score
+remaining_cols = [col for col in true_numeric_cols if col not in log_scale_cols]
+df_scaled = merged_df[remaining_cols].apply(zscore)
+
+    # Combine the log-scaled columns and z-score scaled columns
+df_scaled[log_scale_cols] = merged_df[log_scale_cols]
+
+    # Non-scaled columns
+non_scaled_cols = [
+    'Sl. No', 'Patient File No.', 'PCOS (Y/N)', 
+    'Blood Group', 'Cycle(R/I)', 'Pregnant(Y/N)', 
+    'Weight gain(Y/N)', 'hair growth(Y/N)', 
+    'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
+    'Pimples(Y/N)', 'Fast food (Y/N)', 
+    'Reg.Exercise(Y/N)'
+]
+
+    # Combine scaled and non-scaled columns to create final df
+df_final = pd.concat([df_scaled, merged_df[non_scaled_cols]], axis=1)
+
+    # Display class counts
+class_counts = df_final['PCOS (Y/N)'].value_counts()
+    
+percentage = (class_counts[1] / class_counts.sum()) * 100
+    
+    # SMOTE
+X = df_final.drop('PCOS (Y/N)', axis=1)
+y = df_final['PCOS (Y/N)']
+    
+smote = SMOTE(random_state=42) # sets seed
+X_resampled, y_resampled = smote.fit_resample(X, y)
+resampled_data = pd.DataFrame(X_resampled, columns=X.columns)
+resampled_data['PCOS (Y/N)'] = y_resampled
+all_variables_scaled = resampled_data
+st.session_state.all_variables_scaled = all_variables_scaled
 
 ### Variables that are correlated with PCOS
 true_numeric_cols = ['BMI','Follicle No. (L)', 'Follicle No. (R)']
@@ -803,7 +861,13 @@ Furthermore, I have calculated the **precision** (% of true positive divided by 
     results['SVM (Best Kernel)'] = best_svm_metrics
     best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
     best_svm_model.fit(X_train, y_train)
-    st.session_state.best_svm_model = best_svm_model
+    if 'best_svm_model' not in st.session_state:
+        st.session_state.best_svm_model = best_svm_model
+        best_svm_model.fit(X_train, y_train)
+        st.write("Model has been trained and stored in session state.")
+    else:
+        print("Model already exists in session state.")
+    best_svm_model.fit(X_train, y_train)
     
 
     # Naive Bayes
