@@ -805,7 +805,12 @@ An R² of 0% means the model does not explain any of the variation in the respon
             st.write(f"Best SVM Kernel: {best_svm_kernel}")
         elif model == "Naive Bayes":
             y_pred = nb_model.predict(X_test)
-
+            
+        try:
+            acc_float = float(acc)
+        except ValueError:
+            acc_float = 0.0
+            
         # Calculate metrics
         mae = mean_absolute_error(y_test, y_pred)
         precision = precision_score(y_test, y_pred, zero_division=1)
@@ -813,7 +818,7 @@ An R² of 0% means the model does not explain any of the variation in the respon
         f1 = f1_score(y_test, y_pred, zero_division=1)
 
         # Display metrics
-        st.write(f"- **Accuracy**: {acc:.2f}")
+        st.write(f"- **Accuracy**: {acc_float:.2f}")
         st.write(f"- **Mean Absolute Error (MAE)**: {mae:.2f}")
         st.write(f"- **Precision**: {precision:.2f}")
         st.write(f"- **Recall**: {recall:.2f}")
