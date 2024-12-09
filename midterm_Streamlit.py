@@ -960,7 +960,7 @@ if page == 'Nomogram Risk Assessment':
             f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
     
     # Calculate the risk based on the model
-    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, numeric_features, log_scale_cols)
+    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, numeric_features)
     
     # Display the calculated risk as a percentage
     st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
