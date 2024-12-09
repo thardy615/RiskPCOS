@@ -274,7 +274,8 @@ true_numeric_cols = [
 
     # Define columns to log scale
 log_scale_cols = ['FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRG(ng/mL)']
-
+merged_df = load_data()
+merged_df = merged_df.dropna()
     # Apply log scaling to the specified columns
 merged_df[log_scale_cols] = merged_df[log_scale_cols].apply(lambda x: np.log1p(x))
 
