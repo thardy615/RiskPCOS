@@ -225,10 +225,10 @@ true_numeric_cols = ['Age (yrs)', 'BMI', 'Cycle length(days)',
 # Scaling
 data_scaled = resampled_data[true_numeric_cols].apply(zscore)
 non_scaled_cols = ['hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
-                   'Pimples(Y/N)','Weight gain(Y/N)', 'PCOS (Y/N)']
+                   'Pimples(Y/N)','Weight gain(Y/N)', 'Pregnant(Y/N)', 'PCOS (Y/N)']
 final_model_data = pd.concat([data_scaled, resampled_data[non_scaled_cols]], axis=1)
 features = ['Age (yrs)', 'BMI', 'Cycle length(days)', 'AMH(ng/mL)', 'Follicle No. (L)', 'Follicle No. (R)', 
-                   'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 'Pimples(Y/N)','Weight gain(Y/N)', 'PCOS (Y/N)']
+                   'hair growth(Y/N)', 'Skin darkening (Y/N)', 'Hair loss(Y/N)', 'Pimples(Y/N)','Weight gain(Y/N)', 'Pregnant(Y/N)', 'PCOS (Y/N)']
     
 
 # Sidebar navigation
@@ -362,7 +362,37 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     plt.clf()
     merged_df = merged_df.dropna()  # Drop any rows with NA values
 
-    # Define numeric columns to scale
+#     # Define numeric columns to scale
+#     true_numeric_cols = [
+#     'Age (yrs)', 'Weight (Kg)', 'Height(Cm)', 'BMI', 
+#     'Pulse rate(bpm)', 'RR (breaths/min)', 'Hb(g/dl)', 
+#     'Cycle length(days)', 'Marraige Status (Yrs)', 
+#     'No. of aborptions', 'I   beta-HCG(mIU/mL)', 
+#     'II    beta-HCG(mIU/mL)', 'FSH(mIU/mL)', 'LH(mIU/mL)', 
+#     'FSH/LH', 'Hip(inch)', 'Waist(inch)', 'Waist:Hip Ratio', 
+#     'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
+#     'Vit D3 (ng/mL)', 'PRG(ng/mL)', 'RBS(mg/dl)',
+#     'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)', 
+#     'Follicle No. (L)', 'Follicle No. (R)', 
+#     'Avg. F size (L) (mm)', 'Avg. F size (R) (mm)', 
+#     'Endometrium (mm)'
+# ]
+
+#     # Scale the numeric columns using z-score
+#     df_scaled = merged_df[true_numeric_cols].apply(zscore)
+
+#     # Non-scaled columns
+#     non_scaled_cols = [
+#     'Sl. No', 'Patient File No.', 'PCOS (Y/N)', 
+#     'Blood Group', 'Cycle(R/I)', 'Pregnant(Y/N)', 
+#     'Weight gain(Y/N)', 'hair growth(Y/N)', 
+#     'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
+#     'Pimples(Y/N)', 'Fast food (Y/N)', 
+#     'Reg.Exercise(Y/N)'
+# ]
+
+#     # Combine scaled and non-scaled columns to create final df
+#     df_final = pd.concat([df_scaled, merged_df[non_scaled_cols]], axis=1)
     true_numeric_cols = [
     'Age (yrs)', 'Weight (Kg)', 'Height(Cm)', 'BMI', 
     'Pulse rate(bpm)', 'RR (breaths/min)', 'Hb(g/dl)', 
@@ -378,10 +408,20 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     'Endometrium (mm)'
 ]
 
-    # Scale the numeric columns using z-score
-    df_scaled = merged_df[true_numeric_cols].apply(zscore)
+# Define columns to log scale
+    log_scale_cols = ['FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRG(ng/mL)']
 
-    # Non-scaled columns
+# Apply log scaling to the specified columns
+    merged_df[log_scale_cols] = merged_df[log_scale_cols].apply(lambda x: np.log1p(x))
+
+# Scale the remaining numeric columns using z-score
+    remaining_cols = [col for col in true_numeric_cols if col not in log_scale_cols]
+df_scaled = merged_df[remaining_cols].apply(zscore)
+
+# Combine the log-scaled columns and z-score scaled columns
+    df_scaled[log_scale_cols] = merged_df[log_scale_cols]
+
+# Non-scaled columns
     non_scaled_cols = [
     'Sl. No', 'Patient File No.', 'PCOS (Y/N)', 
     'Blood Group', 'Cycle(R/I)', 'Pregnant(Y/N)', 
@@ -391,7 +431,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     'Reg.Exercise(Y/N)'
 ]
 
-    # Combine scaled and non-scaled columns to create final df
+# Combine scaled and non-scaled columns to create final df
     df_final = pd.concat([df_scaled, merged_df[non_scaled_cols]], axis=1)
 
     # Visualize missing values after removal
@@ -586,7 +626,7 @@ if page == 'Principal Component Analysis':
         fig = px.scatter_matrix(
             components,
             labels=labels,
-            dimensions=range(min(12, len(explained_variance))),  # Show up to 12 PCs
+            dimensions=range(min(13, len(explained_variance))),  # Show up to 13 PCs
             color=final_model_data[color_by],
             color_discrete_map={'1': 'red', '0': 'pink'} 
         )
@@ -657,12 +697,12 @@ if page == 'Models':
 ### Model Selection Summary:
 The table below includes the variables utilized in PCA, which showed strong correlations with PCOS. I have explored and trained the following models:
 
-- **Linear Regression**
-- **Logistic Regression**
-- **LASSO Regression**
-- **Support Vector Machines (SVM)**:
+- **Linear Regression**: Finds the linear relationship between variables to make predictions.
+- **Logistic Regression**: Models the log-odds of an event as a linear combination of independent variables to make predictions.
+- **LASSO Regression**: aka "Least Absolute Shrinkage and Selection Operator," performs both variable selection and shrinkage by adding a penalty term to the standard regression model, which allows shrinking some coefficients to zero selecting the most relevant features.
+- **Support Vector Machines (SVM)**: Algorithm that distinguishes features between classes in target by finding the best hyperplane that maximizes the margin between the closest data points of these classes.
   - Kernels: 'linear', 'rbf', 'poly', 'sigmoid'
-- **Naive Bayes**
+- **Naive Bayes**: An algorithm that assumes that all features are completely independent of each other when predicting the target.
 
 The model with the **best accuracy** is the **SVM model** using the **rbf (Radial Basis Function)** kernel.
 """)
