@@ -196,7 +196,7 @@ def calculate_risk(features_unscaled, model, scaler, numeric_features):
     decision_value = model.decision_function([model_inputs])  # Log-odds
     risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
     return risk[0]
-
+# ChatGPT 4o was utilized to create the function above on 12/3/24
 ######################################################
 
 resampled_data = prepare_resampled_data() # Use function above to get SMOTE dataframe
