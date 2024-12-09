@@ -962,7 +962,7 @@ if page == 'Nomogram Risk Assessment':
     true_numeric_cols = ['BMI', 'Follicle No. (L)', 'Follicle No. (R)', 'AMH(ng/mL)']
     log_scale_cols = ['AMH(ng/mL)']
     non_scaled_cols = ['hair growth(Y/N)', 'Skin darkening (Y/N)', 'Pimples(Y/N)', 'Weight gain(Y/N)', 'PCOS (Y/N)']
-    features = true_numeric_cols + non_scaled_cols
+    features = true_numeric_cols + non_scaled_cols + log_scale_cols
     # Prepare Data
     resampled_data = prepare_resampled_data()
 
@@ -977,6 +977,19 @@ if page == 'Nomogram Risk Assessment':
 
     # Sliders for numeric features
     for feature in true_numeric_cols:
+        min_val = resampled_data[feature].min()
+        max_val = resampled_data[feature].max()
+        mean_val = resampled_data[feature].mean()
+
+        # Ensure slider values are floats
+        min_val, max_val, mean_val = map(float, (min_val, max_val, mean_val))
+
+        # Unscaled slider for all features, including AMH(ng/mL)
+        feature_inputs_unscaled[feature] = st.slider(
+            f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
+    )
+    # Sliders for numeric features
+    for feature in log_scale_cols:
         min_val = resampled_data[feature].min()
         max_val = resampled_data[feature].max()
         mean_val = resampled_data[feature].mean()
