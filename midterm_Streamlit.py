@@ -325,8 +325,8 @@ The clinical data for both the infertile and fertile datasets were collected acr
 - Height (Cm)
 - BMI: Body Mass Index (weight (kg) / (height (m))^2)
 - **Blood Group**
-- Pulse rate (bpm)
-- RR (breaths/min)
+- Pulse rate (bpm): Heart rate
+- RR (breaths/min): Respiratory Rate
 - Hb (g/dl): Hemoglobin
 - **Cycle (R/I)**: Regular/Irregular Cycle
 - Menstrual Cycle length (days)
@@ -348,9 +348,9 @@ The clinical data for both the infertile and fertile datasets were collected acr
 - PRG (ng/mL): Progesterone is a hormone that supports menstruation and pregnancy. Normally, it rises during pregnancy and while using some birth control medications.
 - RBS (mg/dl): Fasting Blood Glucose Test
 - **Weight gain (Y/N)**
-- **Hair growth (Y/N)**
+- **Excessive Hair growth (Y/N)**: Hirsutism
 - **Skin darkening (Y/N)**
-- **Hair loss (Y/N)**
+- **Hair loss (Y/N)**: Male-patterned baldness
 - **Pimples (Y/N)**
 - **Fast food (Y/N)**
 - **Reg. Exercise (Y/N)**
