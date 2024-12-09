@@ -238,8 +238,10 @@ resampled_data = prepare_resampled_data() # Use function above to get SMOTE data
 
 # Call the prepare_resampled_data function to prepare data and store in session state
 # Just in case, since I kept running into trouble
-if 'resampled_data' not in st.session_state:
-    st.session_state.resampled_data = prepare_resampled_data()
+st.session_state.resampled_data = prepare_resampled_data()
+
+# if 'resampled_data' not in st.session_state:
+#     st.session_state.resampled_data = prepare_resampled_data()
     
 # Create subsets for visualizations for each page
 hormone_unscaled = resampled_data[['Age (yrs)', 'PCOS (Y/N)', 'FSH/LH', 'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
@@ -801,6 +803,8 @@ Furthermore, I have calculated the **precision** (% of true positive divided by 
     results['SVM (Best Kernel)'] = best_svm_metrics
     best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
     best_svm_model.fit(X_train, y_train)
+    st.session_state.best_svm_model = best_svm_model
+    
 
     # Naive Bayes
     nb_model = GaussianNB()
