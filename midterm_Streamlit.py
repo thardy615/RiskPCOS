@@ -933,6 +933,7 @@ if page == 'Nomogram Risk Assessment':
     numeric_features = [feature for feature in features if feature != target_variable and len(final_model_data[feature].unique()) > 2]
     binary_features = [feature for feature in features if feature != target_variable and feature not in numeric_features]
 
+    resampled_data = prepare_resampled_data()
     scaler = StandardScaler()
     scaler.fit(resampled_data[numeric_features])
 
