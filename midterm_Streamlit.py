@@ -288,7 +288,7 @@ if page == "Home":
     st.markdown("""<p style="font-size:18px;"> According to the World Health Organization(WHO), it is estimated that this condition affects 8-13% of women among reproductive age; however, 70% of cases go undiagnosed. Given the (lack of) care for women's reproductive health, it is very common for it to take years to diagnose women who do have it.</p>""", unsafe_allow_html=True)
     # Source Information
     st.write("Source: [World Health Organization](https://www.who.int/news-room/fact-sheets/detail/polycystic-ovary-syndrome)")
-    st.write(""" #### This app aims to predict PCOS diagnosis among fertile women and compare fertility measures (AMH) among infertile and fertile women with/without PCOS. Here's how:
+    st.write(""" #### This app aims to predict PCOS diagnosis among fertile and infertile women. Here's how:
     
     - Clean publically available data found suitable for generating predictions (page `Data`).
     - Explore the data within each variable and how they correlate to PCOS (all `IDA/EDA` pages).
