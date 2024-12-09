@@ -645,7 +645,7 @@ if page == 'Principal Component Analysis':
         # Display the plot in Streamlit
         st.plotly_chart(fig)
         # Show explained variance 
-        st.write("Explained Variance Percentages:")
+        st.write("Explained (Default) Variance Percentages:")
         bullet_points = "\n".join([f"- **{selected_features[i]}/PC{i + 1}**: {var:.2f}%" for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)])])
         st.markdown(bullet_points)
         
