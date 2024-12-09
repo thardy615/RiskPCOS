@@ -1,5 +1,3 @@
---CMSE 830 Midterm--
-
 RiskPCOS: A Polycystic Ovarian Syndrome (PCOS) Risk Assessment
 
 https://riskpcos-rcyygyizzwkw7pawagfz9m.streamlit.app/#riskpcos-a-polycystic-ovarian-syndrome-pcos-risk-assessment
