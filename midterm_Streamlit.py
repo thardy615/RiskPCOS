@@ -224,14 +224,14 @@ true_numeric_cols = ['BMI','Follicle No. (L)', 'Follicle No. (R)']
 log_scale_cols = ['AMH(ng/mL)']
 
 # Apply log scaling to the specified columns
-resampled_data[log_scale_cols] = resampled_data[log_scale_cols].apply(lambda x: np.log1p(x))
+temp[log_scale_cols] = resampled_data[log_scale_cols].apply(lambda x: np.log1p(x))
 
 # Scale the remaining numeric columns using z-score
 remaining_cols = [col for col in true_numeric_cols if col not in log_scale_cols]
 data_scaled = resampled_data[remaining_cols].apply(zscore)
 
 # Combine the log-scaled columns and z-score scaled columns
-data_scaled[log_scale_cols] = resampled_data[log_scale_cols]
+data_scaled[log_scale_cols] = temp[log_scale_cols]
 
 # Non-scaled columns
 non_scaled_cols = [
