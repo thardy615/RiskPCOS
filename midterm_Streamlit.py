@@ -968,10 +968,10 @@ if page == 'Nomogram Risk Assessment':
             # )
             # # Transform back to original scale
             # feature_inputs_unscaled[feature] = np.expm1(slider_val) if feature in log_scale_cols else slider_val
-        else:
-            # Slider for standard numeric features
-            feature_inputs_unscaled[feature] = st.slider(
-                f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
+        #else:
+        # Slider for standard numeric features
+        feature_inputs_unscaled[feature] = st.slider(
+            f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
             )
 
     # Dropdowns for binary features
