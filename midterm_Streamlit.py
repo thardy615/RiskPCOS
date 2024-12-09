@@ -177,34 +177,15 @@ def plot_confusion_matrix(model_name, y_true, y_pred):
     
 # Define a function to calculate the "log-odds" based on the model's decision function
 def calculate_risk(features_unscaled, model, scaler, numeric_features, log_scale_cols):
-    # # Separate numeric and binary features
-    # numeric_inputs_unscaled = [features_unscaled[feature] for feature in numeric_features]
-    # binary_inputs = [features_unscaled[feature] for feature in features_unscaled if feature not in numeric_features]
-    
-    # # Scale numeric inputs
-    # numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]
-    
-    # # Combine scaled numeric inputs with binary inputs
-    # model_inputs = []
-    # for feature in features_unscaled:
-    #     if feature in numeric_features:
-    #         model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
-    #     else:
-    #         model_inputs.append(features_unscaled[feature])
-    
-    # # Calculate log-odds using the model's decision function
-    # decision_value = model.decision_function([model_inputs])  # Log-odds
-    # risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
-    # return risk[0]
-        # Separate and scale numeric inputs
-    numeric_inputs_unscaled = [features_unscaled[feature] for feature in numeric_features]
-    numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]
+    # Separate numeric features for scaling
+    zscore_features = [f for f in numeric_features if f not in log_scale_cols]
+    zscore_inputs_unscaled = [features_unscaled[f] for f in zscore_features]
+    zscore_inputs_scaled = scaler.transform([zscore_inputs_unscaled])[0]
 
-    # Log scale the appropriate features
-    log_inputs_unscaled = [features_unscaled[feature] for feature in log_scale_cols]
-    log_inputs_scaled = [np.log1p(value) for value in log_inputs_unscaled]
+    # Log scale the features in log_scale_cols
+    log_inputs_scaled = [np.log1p(features_unscaled[f]) for f in log_scale_cols]
 
-    # Combine scaled numeric inputs with log-scaled inputs and binary inputs
+    # Combine scaled numeric inputs (z-score and log-scaled) with binary inputs
     model_inputs = []
     for feature in features_unscaled:
         if feature in numeric_features:
@@ -212,16 +193,42 @@ def calculate_risk(features_unscaled, model, scaler, numeric_features, log_scale
                 # Use log-scaled input
                 model_inputs.append(log_inputs_scaled[log_scale_cols.index(feature)])
             else:
-                # Use standard-scaled input
-                model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
+                # Use z-score-scaled input
+                model_inputs.append(zscore_inputs_scaled[zscore_features.index(feature)])
         else:
-            # Append binary input directly
+            # Append binary input directly (unscaled)
             model_inputs.append(features_unscaled[feature])
 
     # Calculate log-odds using the model's decision function
     decision_value = model.decision_function([model_inputs])  # Log-odds
     risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
     return risk[0]
+    #     # Separate and scale numeric inputs
+    # numeric_inputs_unscaled = [features_unscaled[feature] for feature in numeric_features]
+    # numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]
+
+    # # Log scale the appropriate features
+    # log_inputs_unscaled = [features_unscaled[feature] for feature in log_scale_cols]
+    # log_inputs_scaled = [np.log1p(value) for value in log_inputs_unscaled]
+
+    # # Combine scaled numeric inputs with log-scaled inputs and binary inputs
+    # model_inputs = []
+    # for feature in features_unscaled:
+    #     if feature in numeric_features:
+    #         if feature in log_scale_cols:
+    #             # Use log-scaled input
+    #             model_inputs.append(log_inputs_scaled[log_scale_cols.index(feature)])
+    #         else:
+    #             # Use standard-scaled input
+    #             model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
+    #     else:
+    #         # Append binary input directly
+    #         model_inputs.append(features_unscaled[feature])
+
+    # # Calculate log-odds using the model's decision function
+    # decision_value = model.decision_function([model_inputs])  # Log-odds
+    # risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
+    # return risk[0]
 # ChatGPT 4o was utilized to create the function above on 12/3/24
 ######################################################
 
@@ -925,7 +932,7 @@ if page == 'Nomogram Risk Assessment':
     features = true_numeric_cols + non_scaled_cols
 
     # Prepare Data
-    resampled_data = prepare_resampled_data()
+    resampled_data = prepare_resampled_data() # unscaled data
 
     # Separate columns for scaling
     remaining_cols = [col for col in true_numeric_cols if col not in log_scale_cols]
@@ -945,17 +952,17 @@ if page == 'Nomogram Risk Assessment':
         # Ensure slider values are floats
         min_val, max_val, mean_val = map(float, (min_val, max_val, mean_val))
 
-        if feature in log_scale_cols:
-            # Slider for log-scale features
-            min_val = resampled_data[feature].min()
-            max_val = resampled_data[feature].max()
-            mean_val = resampled_data[feature].mean()
+        # if feature in log_scale_cols:
+        #     # Slider for log-scale features
+        #     min_val = resampled_data[feature].min()
+        #     max_val = resampled_data[feature].max()
+        #     mean_val = resampled_data[feature].mean()
 
-            # Ensure slider values are floats
-            min_val, max_val, mean_val = map(float, (min_val, max_val, mean_val))
-            feature_inputs_unscaled[feature] = st.slider(
-                f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
-            )
+        #     # Ensure slider values are floats
+        #     min_val, max_val, mean_val = map(float, (min_val, max_val, mean_val))
+        #     feature_inputs_unscaled[feature] = st.slider(
+        #         f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
+        #     )
             # slider_val = st.slider(
             # f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
             # )
