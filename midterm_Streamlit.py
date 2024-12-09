@@ -637,7 +637,7 @@ if page == 'Principal Component Analysis':
             labels=labels,
             dimensions=range(min(13, len(explained_variance))),  # Show up to 13 PCs
             color=final_model_data[color_by],
-            color_discrete_map={'1': 'red', '0': 'pink'} 
+            color_discrete_map={'1': 'pink', '0': 'blue'} 
         )
         fig.update_traces(diagonal_visible=True)
         fig.update_layout(font=dict(size=8),xaxis=dict(tickangle=0), yaxis=dict(tickangle=0))
@@ -673,7 +673,7 @@ if page == 'Principal Component Analysis':
             y='PC2',
             z='PC3',
             color='PCOS (Y/N)',
-            color_discrete_map={'1': 'red', '0': 'pink'},
+            color_discrete_map={'1': 'pink', '0': 'blue'},
             title="3D PCA Plot",
             labels={
                 'PC1': f"PC1 ({explained_variance[0]:.1f}%)",
