@@ -156,7 +156,7 @@ def plot_distributions(subset, title, numeric_columns, categorical_columns):
 # Box Plots
 def plot_boxplots(subset, title, numeric_columns):
     # Plot numeric columns as interactive box plots
-    st.write("Note: Utilizes unscaled data")
+    st.write("Note: Utilizes scaled data")
     for col in numeric_columns: # for each numeric column
         if col in subset.columns and not subset[subset['PCOS (Y/N)'] == 0][col].empty: # For columns in subset, excluding target
             # Create box plot for the current numeric column
