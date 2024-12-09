@@ -643,10 +643,7 @@ if page == 'Principal Component Analysis':
         explained_variance = pca.explained_variance_ratio_ * 100
         labels = {str(i): f"PC {i+1}" for i in range(len(selected_features))}
         final_model_data[color_by] = final_model_data[color_by].astype(str)
-        # Show explained variance 
-        st.write("Explained Variance Percentages:")
-        for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)]):
-            st.write(f"{selected_features[i]}/PC{i + 1}: {var:.2f}%")
+        
 
         # Create scatter matrix plot
         fig = px.scatter_matrix(
@@ -661,6 +658,10 @@ if page == 'Principal Component Analysis':
 
         # Display the plot in Streamlit
         st.plotly_chart(fig)
+        # Show explained variance 
+        st.write("Explained Variance Percentages:")
+        for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)]):
+            st.write(f"{selected_features[i]}/PC{i + 1}: {var:.2f}%")
 
         
     # Add a 3D PCA visualization
