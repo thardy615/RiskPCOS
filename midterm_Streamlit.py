@@ -957,7 +957,7 @@ if page == 'Nomogram Risk Assessment':
     # # Display the calculated risk as a percentage
     # st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
     # Variables
-    target_variable = 'PCOS (Y/N)'
+	target_variable = 'PCOS (Y/N)'
 	true_numeric_cols = ['BMI', 'Follicle No. (L)', 'Follicle No. (R)', 'AMH(ng/mL)']
 	log_scale_cols = ['AMH(ng/mL)']
 	non_scaled_cols = ['hair growth(Y/N)', 'Skin darkening (Y/N)', 'Pimples(Y/N)', 'Weight gain(Y/N)', 'PCOS (Y/N)']
