@@ -177,19 +177,54 @@ def plot_confusion_matrix(model_name, y_true, y_pred):
     
 # Define a function to calculate the "log-odds" based on the model's decision function
 def calculate_risk(features_unscaled, model, scaler, numeric_features):
+    # # Separate numeric and binary features
+    # numeric_inputs_unscaled = [features_unscaled[feature] for feature in numeric_features]
+    # binary_inputs = [features_unscaled[feature] for feature in features_unscaled if feature not in numeric_features]
+    
+    # # Scale numeric inputs
+    # numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]
+    
+    # # Combine scaled numeric inputs with binary inputs
+    # model_inputs = []
+    # for feature in features_unscaled:
+    #     if feature in numeric_features:
+    #         model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
+    #     else:
+    #         model_inputs.append(features_unscaled[feature])
+    
+    # # Calculate log-odds using the model's decision function
+    # decision_value = model.decision_function([model_inputs])  # Log-odds
+    # risk = 1 / (1 + np.exp(-decision_value))  # Convert log-odds to probability
+    # return risk[0]
     # Separate numeric and binary features
-    numeric_inputs_unscaled = [features_unscaled[feature] for feature in numeric_features]
-    binary_inputs = [features_unscaled[feature] for feature in features_unscaled if feature not in numeric_features]
+    numeric_inputs_unscaled = [
+        features_unscaled[feature] for feature in numeric_features if feature not in log_scale_cols
+    ]
+    log_inputs_unscaled = [
+        features_unscaled[feature] for feature in numeric_features if feature in log_scale_cols
+    ]
+    binary_inputs = [
+        features_unscaled[feature] for feature in features_unscaled if feature not in numeric_features
+    ]
     
     # Scale numeric inputs
     numeric_inputs_scaled = scaler.transform([numeric_inputs_unscaled])[0]
     
-    # Combine scaled numeric inputs with binary inputs
+    # Apply log scaling to the appropriate features
+    log_inputs_scaled = [np.log1p(value) for value in log_inputs_unscaled]
+    
+    # Combine scaled numeric inputs with log-scaled inputs and binary inputs
     model_inputs = []
     for feature in features_unscaled:
         if feature in numeric_features:
-            model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
+            if feature in log_scale_cols:
+                # Use log-scaled input
+                model_inputs.append(log_inputs_scaled[log_scale_cols.index(feature)])
+            else:
+                # Use standard-scaled input
+                model_inputs.append(numeric_inputs_scaled[numeric_features.index(feature)])
         else:
+            # Append binary input directly
             model_inputs.append(features_unscaled[feature])
     
     # Calculate log-odds using the model's decision function
@@ -856,7 +891,7 @@ if page == 'Nomogram Risk Assessment':
             f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes")
     
     # Calculate the risk based on the model
-    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, numeric_features)
+    risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, numeric_features, log_scale_cols)
     
     # Display the calculated risk as a percentage
     st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
