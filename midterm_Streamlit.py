@@ -296,26 +296,26 @@ The clinical data for both the infertile and fertile datasets were collected acr
 - **Blood Group**
 - Pulse rate (bpm)
 - RR (breaths/min)
-- Hb (g/dl)
-- **Cycle (R/I)**
-- Cycle length (days)
+- Hb (g/dl): Hemoglobin
+- **Cycle (R/I)**: Regular/Irregular Cycle
+- Menstrual Cycle length (days)
 - **Marriage Status (Yrs)**
 - **Pregnant (Y/N)**
 - No. of abortions
-- I beta-HCG (mIU/mL)
-- II beta-HCG (mIU/mL)
-- FSH (mIU/mL)
-- LH (mIU/mL)
-- FSH/LH
+- I beta-HCG (mIU/mL): 1st variation of beta-Human Chorionic Gonadotropin (hCG) hormone to detect pregnancy, and can also be used as a tumor marker
+- II beta-HCG (mIU/mL): 2nd variation of beta-Human Chorionic Gonadotropin (hCG) hormone to detect pregnancy, and can also be used as a tumor marker
+- FSH (mIU/mL): Follicle-stimulating hormone is a hormone that stimulates egg growth in women during their menstrual cycle
+- LH (mIU/mL): Luteinizing hormone is a hormone produced in the pituitary gland that stimulates the ovaries to release eggs and produce other hormones
+- FSH/LH: Ratio between LH and FSH usually lies between 1-2. For women with PCOS, this ratio becomes reversed, and it might reach as high as 2 or 3, resulting in ovulation not occurring.
 - Hip (inch)
 - Waist (inch)
-- Waist:Hip Ratio
-- TSH (mIU/L)
-- AMH (ng/mL)
-- PRL (ng/mL)
-- Vit D3 (ng/mL)
-- PRG (ng/mL)
-- RBS (mg/dl)
+- Waist:Hip Ratio: Ratio to assess the distribution of fat on your body. Higher ratios can mean patients carry more fat around their waist
+- TSH (mIU/L): Thyroid-stimulating hormone is produced by the pituitary gland and regulates the production of hormones by the thyroid gland
+- AMH (ng/mL): Anti-mullerian hormone assesses a woman's ovarian reserve or egg count. This hormone is produced by the small follicles in a woman's ovaries.
+- PRL (ng/mL): Prolactin (also known as lactotropin) is a hormone that's responsible for lactation. This hormone is expected to be high in pregnant/lactating women. 
+- Vit D3 (ng/mL): Vitamin D
+- PRG (ng/mL): Progesterone is a hormone that supports menstruation and pregnancy. Normally, it rises during pregnancy and while using some birth control medications.
+- RBS (mg/dl): Fasting Blood Glucose Test
 - **Weight gain (Y/N)**
 - **Hair growth (Y/N)**
 - **Skin darkening (Y/N)**
@@ -323,13 +323,13 @@ The clinical data for both the infertile and fertile datasets were collected acr
 - **Pimples (Y/N)**
 - **Fast food (Y/N)**
 - **Reg. Exercise (Y/N)**
-- BP Systolic (mmHg)
-- BP Diastolic (mmHg)
-- Follicle No. (L)
-- Follicle No. (R)
-- Avg. F size (L) (mm)
-- Avg. F size (R) (mm)
-- Endometrium (mm)
+- BP Systolic (mmHg): Systolic Blood Pressure
+- BP Diastolic (mmHg): Diastolic Blood Pressure
+- Follicle No. (L): Number of follicular cysts on left ovary (caused by anovulation)
+- Follicle No. (R): Number of follicular cysts on right ovary (caused by anovulation)
+- Avg. F size (L) (mm): Average size of follicular cysts on left ovary
+- Avg. F size (R) (mm): follicular cysts on right ovary
+- Endometrium (mm): The tissue that lines the uterus. This organ thickens in preparation for pregnancy, and if a fertilized egg implants, the lining remains in place for the fetus. If pregnancy doesn't occur, the endometrium sheds during the menstrual cycle.
 
 Before any data manipulation, missingingness and class/sub-class sizes need to be accessed. Overall, the data only contained a few missing values (Missing Completely at Random aka MCAR), so simply removing them does not interfere with how the data is observed. However, about 1/3 of patients are classified to have PCOS while 2/3 of patients are not, so SMOTE is used to ensure equal class distribution between non-PCOS and PCOS patients. How I processed my data is broken down below.
 """, unsafe_allow_html=True)
