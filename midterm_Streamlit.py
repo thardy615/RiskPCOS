@@ -618,7 +618,7 @@ if page == 'Principal Component Analysis':
     st.write("""
         Principal Component Analysis (PCA) helps in reducing the dimensionality of data 
         while retaining most of the variance. Below, you can interact with the PCA plot 
-        and visualize the relationships between the variables in the transformed space Additionally, the sidebar allows users to include all 11 variables or exclude up to 9 of your choosing. Keep in mind, if only 2 PCs are chosen, the 3D plot with not execute. Also, variance percentages for each PC are shown in the sidebar.
+        and visualize the relationships between the variables in the transformed space Additionally, the sidebar allows users to include all 8 variables or exclude up to 6 of your choosing. Keep in mind, if only 2 PCs are chosen, the 3D plot with not execute. Also, variance percentages for each PC are shown in the sidebar.
     """)
     st.write(final_model_data)  # Display data being used in PCA (11 variables + target)
 
@@ -643,6 +643,10 @@ if page == 'Principal Component Analysis':
         explained_variance = pca.explained_variance_ratio_ * 100
         labels = {str(i): f"PC {i+1}" for i in range(len(selected_features))}
         final_model_data[color_by] = final_model_data[color_by].astype(str)
+        # Show explained variance 
+        st.write("Explained Variance Percentages:")
+        for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)]):
+            st.write(f"{selected_features[i]}/PC{i + 1}: {var:.2f}%")
 
         # Create scatter matrix plot
         fig = px.scatter_matrix(
@@ -658,10 +662,7 @@ if page == 'Principal Component Analysis':
         # Display the plot in Streamlit
         st.plotly_chart(fig)
 
-        # Show explained variance in sidebar
-        st.sidebar.write("Explained Variance Percentages:")
-        for i, var in enumerate(pca.explained_variance_ratio_[:len(selected_features)]):
-            st.sidebar.write(f"{selected_features[i]}/PC{i + 1}: {var:.2f}%")
+        
     # Add a 3D PCA visualization
     st.subheader("Interactive 3D PCA Plot")
     st.write("""I have also visualized the data in a 3D principal component space to explore clustering or patterns 
