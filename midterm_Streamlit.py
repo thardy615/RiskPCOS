@@ -963,7 +963,6 @@ if page == 'Nomogram Risk Assessment':
     log_scale_cols = ['AMH(ng/mL)']
     non_scaled_cols = ['hair growth(Y/N)', 'Skin darkening (Y/N)', 'Pimples(Y/N)', 'Weight gain(Y/N)', 'PCOS (Y/N)']
     features = true_numeric_cols + non_scaled_cols
-
     # Prepare Data
     resampled_data = prepare_resampled_data()
 
@@ -985,24 +984,17 @@ if page == 'Nomogram Risk Assessment':
         # Ensure slider values are floats
         min_val, max_val, mean_val = map(float, (min_val, max_val, mean_val))
 
-        # Log scale for AMH(ng/mL)
-        if feature in log_scale_cols:
-            feature_inputs_unscaled[feature] = st.slider(
-                f"Adjust {feature} (Log Scaled)", min_value=np.log1p(min_val), max_value=np.log1p(max_val), value=np.log1p(mean_val)
-            )
-            # Transform slider input back to original scale
-            feature_inputs_unscaled[feature] = np.expm1(feature_inputs_unscaled[feature])
-        else:
-            feature_inputs_unscaled[feature] = st.slider(
-                f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
-            )
+        # Unscaled slider for all features, including AMH(ng/mL)
+        feature_inputs_unscaled[feature] = st.slider(
+            f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
+    )
 
     # Dropdowns for binary features
     binary_features = [feature for feature in non_scaled_cols if feature != target_variable]
     for feature in binary_features:
         feature_inputs_unscaled[feature] = st.selectbox(
             f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes"
-        )
+    )
 
     # Calculate the risk
     risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, remaining_cols)
