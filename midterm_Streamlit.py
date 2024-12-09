@@ -957,9 +957,7 @@ if page == 'Nomogram Risk Assessment':
     # # Display the calculated risk as a percentage
     # st.subheader(f"Estimated Risk of PCOS: {risk * 100:.2f}%")
     # Variables
-    
-    # Variables
-	target_variable = 'PCOS (Y/N)'
+    target_variable = 'PCOS (Y/N)'
 	true_numeric_cols = ['BMI', 'Follicle No. (L)', 'Follicle No. (R)', 'AMH(ng/mL)']
 	log_scale_cols = ['AMH(ng/mL)']
 	non_scaled_cols = ['hair growth(Y/N)', 'Skin darkening (Y/N)', 'Pimples(Y/N)', 'Weight gain(Y/N)', 'PCOS (Y/N)']
@@ -979,32 +977,32 @@ if page == 'Nomogram Risk Assessment':
 
 	# Sliders for numeric features
 	for feature in true_numeric_cols:
-		min_val = resampled_data[feature].min()
-		max_val = resampled_data[feature].max()
-		mean_val = resampled_data[feature].mean()
+    	min_val = resampled_data[feature].min()
+    	max_val = resampled_data[feature].max()
+    	mean_val = resampled_data[feature].mean()
 
-		# Ensure slider values are floats
-		min_val, max_val, mean_val = map(float, (min_val, max_val, mean_val))
+    	# Ensure slider values are floats
+    	min_val, max_val, mean_val = map(float, (min_val, max_val, mean_val))
 
-		if feature in log_scale_cols:
-			# Slider for log-scale features
-			slider_val = st.slider(
-				f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
-			)
-			# Transform back to original scale
-			feature_inputs_unscaled[feature] = np.expm1(slider_val) if feature in log_scale_cols else slider_val
-		else:
-			# Slider for standard numeric features
-			feature_inputs_unscaled[feature] = st.slider(
-				f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
-			)
+    	if feature in log_scale_cols:
+        	# Slider for log-scale features
+        	slider_val = st.slider(
+            f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
+        )
+        	# Transform back to original scale
+        	feature_inputs_unscaled[feature] = np.expm1(slider_val) if feature in log_scale_cols else slider_val
+    	else:
+        	# Slider for standard numeric features
+        	feature_inputs_unscaled[feature] = st.slider(
+            	f"Adjust {feature}", min_value=min_val, max_value=max_val, value=mean_val
+        )
 
 	# Dropdowns for binary features
 	binary_features = [feature for feature in non_scaled_cols if feature != target_variable]
 	for feature in binary_features:
-		feature_inputs_unscaled[feature] = st.selectbox(
-			f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes"
-		)
+    	feature_inputs_unscaled[feature] = st.selectbox(
+        	f"Select {feature}", options=[0, 1], format_func=lambda x: "No" if x == 0 else "Yes"
+    )
 
 	# Calculate the risk
 	risk = calculate_risk(feature_inputs_unscaled, best_svm_model, scaler, remaining_cols)
