@@ -98,6 +98,7 @@ def visualize_missing_values(data):
 
 # Correlation plots   
 def plot_correlations(subset, title):
+    st.write("Note: Utilizes scaled data")
     # Calculate correlations
     corr_matrix = subset.corr()
 
@@ -167,6 +168,7 @@ def plot_boxplots(subset, title, numeric_columns):
 
 # Function to plot confusion matrix
 def plot_confusion_matrix(model_name, y_true, y_pred):
+    st.write("Note: Utilizes scaled data")
     fig, ax = plt.subplots(figsize=(5, 5))
     ConfusionMatrixDisplay.from_predictions(
         y_true, y_pred, ax=ax, cmap='Blues', colorbar=False
@@ -291,7 +293,7 @@ if page == "Home":
     st.markdown("""<p style="font-size:18px;"> According to the World Health Organization(WHO), it is estimated that this condition affects 8-13% of women among reproductive age; however, 70% of cases go undiagnosed. Given the (lack of) care for women's reproductive health, it is very common for it to take years to diagnose women who do have it.</p>""", unsafe_allow_html=True)
     # Source Information
     st.write("Source: [World Health Organization](https://www.who.int/news-room/fact-sheets/detail/polycystic-ovary-syndrome)")
-    st.write(""" #### This app aims to predict PCOS diagnosis among fertile and infertile women. Here's how:
+    st.write(""" #### The RiskPCOS app aims to predict PCOS diagnosis among fertile and infertile women. Here's how:
     
     - Clean publically available data found suitable for generating predictions (page `Data`).
     - Explore the data within each variable and how they correlate to PCOS (all `IDA/EDA` pages).
@@ -320,7 +322,7 @@ The clinical data for both the infertile and fertile datasets were collected acr
 - Age (yrs)
 - Weight (Kg)
 - Height (Cm)
-- BMI
+- BMI: Body Mass Index (weight (kg) / (height (m))^2)
 - **Blood Group**
 - Pulse rate (bpm)
 - RR (breaths/min)
@@ -549,6 +551,7 @@ if page == 'IDA/EDA: Hormone':
         plot_distributions(hormone_unscaled, "Hormone", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(hormone, "Hormone")
+        st.write("AMH determines egg reserve, and those with PCOS tend to have a higher egg reserve due to not ovulating/menstruating. This checks out!")
     if st.button('Show Boxplots'):
         plot_boxplots(hormone, "Hormone", numeric_columns)
 
@@ -568,6 +571,7 @@ if page == 'IDA/EDA: Quality of Life':
         plot_distributions(qualityOfLife_unscaled, "Quality of Life", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(qualityOfLife, "Quality of Life")
+        st.write("Insulin resistance is a symptom (and possibly cause) of PCOS, so it is safe to assume that strong correlations were expected for weight gain and skin darkening.")
     st.markdown(""" <br><br><div style="color: red;"> No numeric columns, so no boxplots </div>
 """, unsafe_allow_html=True)
 
@@ -587,6 +591,8 @@ if page == 'IDA/EDA: Metabolic':
         plot_distributions(metabolic_unscaled, "Metabolic", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(metabolic, "Metabolic")
+        st.write("Insulin resistance is a symptom (and possibly cause) of PCOS, so it is safe to assume that strong correlations were expected for BMI.")
+
     if st.button('Show Boxplots'):
         plot_boxplots(metabolic, "Metabolic", numeric_columns)
 
@@ -607,6 +613,8 @@ if page == 'IDA/EDA: Fertility':
         plot_distributions(fertility_unscaled, "Fertility", numeric_columns, categorical_columns)
     if st.button('Show Correlations'):
         plot_correlations(fertility, "Fertility")
+        st.write("Follicular cysts are one of the diagnostic criteria for PCOS, so it is safe to assume that strong correlations were expected for the number of follicles in either ovary.")
+
     if st.button('Show Boxplots'):
         plot_boxplots(fertility, "Fertility", numeric_columns)
 
