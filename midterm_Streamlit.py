@@ -394,37 +394,7 @@ Before any data manipulation, missingingness and class/sub-class sizes need to b
     plt.clf()
     merged_df = merged_df.dropna()  # Drop any rows with NA values
 
-#     # Define numeric columns to scale
-#     true_numeric_cols = [
-#     'Age (yrs)', 'Weight (Kg)', 'Height(Cm)', 'BMI', 
-#     'Pulse rate(bpm)', 'RR (breaths/min)', 'Hb(g/dl)', 
-#     'Cycle length(days)', 'Marraige Status (Yrs)', 
-#     'No. of aborptions', 'I   beta-HCG(mIU/mL)', 
-#     'II    beta-HCG(mIU/mL)', 'FSH(mIU/mL)', 'LH(mIU/mL)', 
-#     'FSH/LH', 'Hip(inch)', 'Waist(inch)', 'Waist:Hip Ratio', 
-#     'TSH (mIU/L)', 'AMH(ng/mL)', 'PRL(ng/mL)', 
-#     'Vit D3 (ng/mL)', 'PRG(ng/mL)', 'RBS(mg/dl)',
-#     'BP _Systolic (mmHg)', 'BP _Diastolic (mmHg)', 
-#     'Follicle No. (L)', 'Follicle No. (R)', 
-#     'Avg. F size (L) (mm)', 'Avg. F size (R) (mm)', 
-#     'Endometrium (mm)'
-# ]
-
-#     # Scale the numeric columns using z-score
-#     df_scaled = merged_df[true_numeric_cols].apply(zscore)
-
-#     # Non-scaled columns
-#     non_scaled_cols = [
-#     'Sl. No', 'Patient File No.', 'PCOS (Y/N)', 
-#     'Blood Group', 'Cycle(R/I)', 'Pregnant(Y/N)', 
-#     'Weight gain(Y/N)', 'hair growth(Y/N)', 
-#     'Skin darkening (Y/N)', 'Hair loss(Y/N)', 
-#     'Pimples(Y/N)', 'Fast food (Y/N)', 
-#     'Reg.Exercise(Y/N)'
-# ]
-
-#     # Combine scaled and non-scaled columns to create final df
-#     df_final = pd.concat([df_scaled, merged_df[non_scaled_cols]], axis=1)
+    # Define numeric columns to scale
     true_numeric_cols = [
     'Age (yrs)', 'Weight (Kg)', 'Height(Cm)', 'BMI', 
     'Pulse rate(bpm)', 'RR (breaths/min)', 'Hb(g/dl)', 
@@ -751,7 +721,8 @@ An R² of 0% means the model does not explain any of the variation in the respon
     # Display an image using a URL
     image_url2 = "https://cdn.prod.website-files.com/660ef16a9e0687d9cc27474a/662c42677529a0f4e97e4f96_644aea65cefe35380f198a5a_class_guide_cm08.png"
     st.image(image_url2, caption = "How to interpret a confusion matrix for a machine learning model", use_column_width=True)
-    st.write(f"Displaying the data utilized in each model for reference: {final_model_data}")  # Display dataset for reference
+    st.write("Displaying the data utilized in each model for reference:")
+    st.write(final_model_data) # Display dataset for reference
 
     # Split the data into training and test data
     target = 'PCOS (Y/N)'
@@ -842,78 +813,6 @@ An R² of 0% means the model does not explain any of the variation in the respon
     )
         ax.set_title(f"Confusion Matrix: {model}")
         st.pyplot(fig)
-    # # Models
-    # results = {}
-
-    # ## Linear Regression
-    # lin_reg = LinearRegression()
-    # lin_reg.fit(X_train, y_train)
-    # y_pred_lin = lin_reg.predict(X_test)
-    # results['Linear Regression'] = accuracy_score(y_test, y_pred_lin.round())  # Round predictions
-
-    # ## Logistic Regression
-    # log_reg = LogisticRegression(max_iter=1000, random_state=42)
-    # log_reg.fit(X_train, y_train)
-    # y_pred_log = log_reg.predict(X_test)
-    # results['Logistic Regression'] = accuracy_score(y_test, y_pred_log)
-
-    # ## LASSO Regression
-    # lasso = Lasso(alpha=0.1, random_state=42)
-    # lasso.fit(X_train, y_train)
-    # y_pred_lasso = lasso.predict(X_test)
-    # results['LASSO Regression'] = accuracy_score(y_test, y_pred_lasso.round())  # Round predictions
-
-    # ## Support Vector Machines (SVM)
-    # kernels = ['linear', 'rbf', 'poly', 'sigmoid']
-    # svm_accuracies = {}
-    # for kernel in kernels:
-    #     svm_model = SVC(kernel=kernel, random_state=42)
-    #     svm_model.fit(X_train, y_train)
-    #     y_pred_svm = svm_model.predict(X_test)
-    #     svm_accuracies[kernel] = accuracy_score(y_test, y_pred_svm)
-
-    # best_svm_kernel = max(svm_accuracies, key=svm_accuracies.get)
-    # results['SVM (Best Kernel)'] = svm_accuracies[best_svm_kernel]
-    # best_svm_model = SVC(kernel=best_svm_kernel, random_state=42)
-    # if 'best_svm_model' not in st.session_state:
-    #     st.session_state.best_svm_model = best_svm_model
-    #     best_svm_model.fit(X_train, y_train)
-    #     st.write("Model has been trained and stored in session state.")
-    # else:
-    #     print("Model already exists in session state.")
-    # best_svm_model.fit(X_train, y_train)
-    
-    # ## Naive Bayes
-    # nb_model = GaussianNB()
-    # nb_model.fit(X_train, y_train)
-    # y_pred_nb = nb_model.predict(X_test)
-    # results['Naive Bayes'] = accuracy_score(y_test, y_pred_nb)
-
-    # # Display results
-    # st.subheader("Model Comparisons:")
-    # for model, acc in results.items():
-    #     st.subheader(f"{model} Accuracy: {acc:.2f}")
-    #     # Generate predictions for the corresponding model
-    #     if model == "Linear Regression":
-    #         y_pred = lin_reg.predict(X_test).round()
-    #     elif model == "Logistic Regression":
-    #         y_pred = log_reg.predict(X_test)
-    #     elif model == "LASSO Regression":
-    #         y_pred = lasso.predict(X_test).round()
-    #     elif model.startswith("SVM"):
-    #         y_pred = best_svm_model.predict(X_test) 
-    #         st.write(f"Best SVM Kernel: {best_svm_kernel}")
-    #     elif model == "Naive Bayes":
-    #         y_pred = nb_model.predict(X_test)
-
-    #     # Plot the confusion matrix
-    #     fig, ax = plt.subplots(figsize=(1.75, 1.75))
-    #     ConfusionMatrixDisplay.from_predictions(
-    #         y_test, y_pred, ax=ax, cmap="Blues", colorbar=False
-    #     )
-    #     ax.set_title(f"Confusion Matrix: {model}")
-    #     st.pyplot(fig)
-    
     
 if page == 'Nomogram Risk Assessment':
     st.markdown("""<h1 style='color: pink;'><strong> Interactive Nomogram for PCOS Risk Prediction </h1>""", unsafe_allow_html=True)
